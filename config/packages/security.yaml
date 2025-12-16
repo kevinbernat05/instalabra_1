@@ -1,0 +1,23 @@
+security:
+    password_hashers:
+        App\Entity\Usuario:
+            algorithm: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Usuario
+                property: email
+
+    firewalls:
+        main:
+            provider: app_user_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+            logout:
+                path: app_logout
+                target: /
+
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
