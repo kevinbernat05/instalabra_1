@@ -57,6 +57,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     public function getFechaRegistro(): \DateTimeInterface
     {
         return $this->fechaRegistro;
@@ -65,6 +66,24 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFechaRegistro(\DateTimeInterface $fechaRegistro): self
     {
         $this->fechaRegistro = $fechaRegistro;
+        return $this;
+    }
+
+    public function getNombre(): ?string {
+    return $this->nombre;
+    }
+
+    public function setNombre(string $nombre): self {
+        $this->nombre = $nombre;
+        return $this;
+    }
+
+    public function getEmail(): ?string {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self {
+        $this->email = $email;
         return $this;
     }
 
@@ -78,5 +97,10 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         $this->valoraciones = new ArrayCollection();
         $this->seguimientosQueHace = new ArrayCollection();
         $this->seguimientosQueRecibe = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 }

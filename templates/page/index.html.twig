@@ -18,17 +18,49 @@
     </header>
 
     <main>
+        <h2>Publica tu palabra</h2>
+
+        {% if app.user %}
+            {{ form_start(form) }}
+                {{ form_row(form.texto, {'attr': {'placeholder': 'Escribe tu palabra...', 'rows': 3}}) }}
+                <button type="submit">Publicar</button>
+            {{ form_end(form) }}
+        {% else %}
+            <p>Debes <a href="{{ path('app_login') }}">iniciar sesión</a> para publicar.</p>
+        {% endif %}
+
         <h2>Últimas palabras</h2>
-        <ul>
-            {% for palabra in palabras %}
-                <li>
-                    <strong>{{ palabra.usuario.nombre }}</strong>: {{ palabra.texto }}
-                    <span>({{ palabra.contadorValoraciones }} valoraciones)</span>
-                </li>
-            {% else %}
-                <li>No hay palabras todavía.</li>
-            {% endfor %}
-        </ul>
+            <ul>
+                {% for palabra in palabras %}
+                    <li>
+                        <strong>{{ palabra.usuario.nombre }}</strong>: {{ palabra.texto }}
+
+                        {# Contador de likes activo #}
+                        <span>
+                            ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }} valoraciones)
+                        </span>
+
+                        {% if app.user %}
+                            {# Comprobar si el usuario ya dio like #}
+                            {% set usuarioDioLike = false %}
+                            {% for valoracion in palabra.valoraciones %}
+                                {% if valoracion.usuario.id == app.user.id and valoracion.likeActiva %}
+                                    {% set usuarioDioLike = true %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {# Formulario toggle like / quitar like #}
+                            <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline">
+                                <button type="submit">
+                                    {% if usuarioDioLike %}💔 Quitar Like{% else %}👍 Like{% endif %}
+                                </button>
+                            </form>
+                        {% endif %}
+                    </li>
+                {% else %}
+                    <li>No hay palabras todavía.</li>
+                {% endfor %}
+            </ul>
     </main>
 
     <footer>
