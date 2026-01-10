@@ -13,6 +13,7 @@
                 <li><a href="{{ path('app_home') }}">Inicio</a></li>
                 <li><a href="{{ path('app_login') }}">Login</a></li>
                 <li><a href="{{ path('app_register') }}">Registro</a></li>
+                <li><a href="{{ path('app_perfil') }}">Perfil</a></li>
             </ul>
         </nav>
     </header>
@@ -29,40 +30,34 @@
             <p>Debes <a href="{{ path('app_login') }}">iniciar sesión</a> para publicar.</p>
         {% endif %}
 
-        <h2>Últimas palabras</h2>
-            <ul>
+            <h2>Feed de palabras</h2>
                 {% for palabra in palabras %}
-                    <li>
-                        <strong>{{ palabra.usuario.nombre }}</strong>: {{ palabra.texto }}
+                    <div class="palabra">
+                        <p><strong>{{ palabra.usuario.nombre }}</strong></p>
+                        <p>{{ palabra.texto }}</p>
+                        <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 
-                        {# Contador de likes activo #}
-                        <span>
-                            ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }} valoraciones)
-                        </span>
+                        {# Contador de likes activos #}
 
                         {% if app.user %}
-                            {# Comprobar si el usuario ya dio like #}
-                            {% set usuarioDioLike = false %}
-                            {% for valoracion in palabra.valoraciones %}
-                                {% if valoracion.usuario.id == app.user.id and valoracion.likeActiva %}
-                                    {% set usuarioDioLike = true %}
-                                {% endif %}
-                            {% endfor %}
-
-                            {# Formulario toggle like / quitar like #}
-                            <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline">
+                            <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
+                                {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
                                 <button type="submit">
-                                    {% if usuarioDioLike %}💔 Quitar Like{% else %}👍 Like{% endif %}
+                                    {% if liked %}
+                                        💖 Ya te gusta
+                                    {% else %}
+                                        👍 Like
+                                    {% endif %}
                                 </button>
+                                <p>{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
                             </form>
                         {% endif %}
-                    </li>
+                    </div>
                 {% else %}
-                    <li>No hay palabras todavía.</li>
+                    <p>No hay palabras publicadas todavía.</p>
                 {% endfor %}
-            </ul>
-    </main>
 
+    </main>
     <footer>
         <p>&copy; 2025 Instalabra</p>
     </footer>

@@ -30,7 +30,7 @@ final class PageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Asignar usuario y fecha
+            // Asignar usuario y fecha automáticamente
             $palabra->setUsuario($this->getUser());
             $palabra->setFechaCreacion(new \DateTime());
 
@@ -42,7 +42,7 @@ final class PageController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // Traer todas las palabras ordenadas por fecha
+        // Traer todas las palabras ordenadas por fecha descendente (más recientes primero)
         $palabras = $palabraRepository->findBy([], ['fechaCreacion' => 'DESC']);
 
         return $this->render('page/index.html.twig', [
@@ -84,5 +84,26 @@ final class PageController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('app_home');
+    } 
+    
+    #[Route('/perfil', name: 'app_perfil')]
+    public function perfil(PalabraRepository $palabraRepository): Response
+    {
+        $usuario = $this->getUser();
+
+        if (!$usuario) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Traer las palabras de este usuario ordenadas por fecha descendente
+        $palabras = $palabraRepository->findBy(
+            ['usuario' => $usuario],
+            ['fechaCreacion' => 'DESC']
+        );
+
+        return $this->render('page/perfil.html.twig', [
+            'usuario' => $usuario,
+            'palabras' => $palabras,
+        ]);
     }
 }

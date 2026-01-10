@@ -15,7 +15,13 @@ class PalabraRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Palabra::class);
     }
-
+    public function findAllOrderedByDate(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.fechaCreacion', 'DESC') // DESC = más reciente primero
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Palabra[] Returns an array of Palabra objects
     //     */

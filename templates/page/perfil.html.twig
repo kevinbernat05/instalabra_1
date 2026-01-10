@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de {{ usuario.nombre }}</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Perfil de {{ usuario.nombre }}</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ path('app_home') }}">Inicio</a></li>
+                <li><a href="{{ path('app_logout') }}">Cerrar sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Mis palabras publicadas</h2>
+
+        {% if palabras|length > 0 %}
+            {% for palabra in palabras %}
+                <div class="palabra">
+                    <p>{{ palabra.texto }}</p>
+                    <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
+
+                    {# Contador de likes #}
+                    <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aún no has publicado ninguna palabra.</p>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Instalabra</p>
+    </footer>
+</body>
+</html>
