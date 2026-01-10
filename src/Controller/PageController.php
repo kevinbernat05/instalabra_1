@@ -106,4 +106,13 @@ final class PageController extends AbstractController
             'palabras' => $palabras,
         ]);
     }
+    #[Route('/ranking', name: 'app_ranking')]
+    public function ranking(PalabraRepository $palabraRepository): Response
+    {
+        $palabras = $palabraRepository->findTopByLikes(10); // top 10
+
+        return $this->render('page/ranking.html.twig', [
+            'palabras' => $palabras,
+        ]);
+    }
 }

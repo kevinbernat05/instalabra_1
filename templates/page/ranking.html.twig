@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranking de palabras</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Ranking de palabras por likes</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ path('app_home') }}">Inicio</a></li>
+                {% if app.user %}
+                    <li><a href="{{ path('app_perfil') }}">Mi perfil</a></li>
+                    <li><a href="{{ path('app_logout') }}">Cerrar sesión</a></li>
+                {% else %}
+                    <li><a href="{{ path('app_login') }}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% if palabras|length > 0 %}
+            <ol>
+                {% for row in palabras %}
+                    {% set palabra = row[0] %}
+                    {% set likesCount = row.likesCount %}
+                    <p><strong>{{ palabra.usuario.nombre }}</strong>: {{ palabra.texto }}</p>
+                    <p>👍 Likes: {{ likesCount }}</p>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p>No hay palabras con likes todavía.</p>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Instalabra</p>
+    </footer>
+</body>
+</html>

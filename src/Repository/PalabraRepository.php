@@ -22,6 +22,18 @@ class PalabraRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    public function findTopByLikes(int $limit = 10): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.valoraciones', 'v')             // unir con valoraciones
+            ->addSelect('COUNT(v.id) AS likesCount')     // contar valoraciones
+            ->andWhere('v.likeActiva = true OR v.id IS NULL') // solo likes activos
+            ->groupBy('p.id')
+            ->orderBy('likesCount', 'DESC')              // de mayor a menor
+            ->setMaxResults($limit)                      // limitar resultados
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Palabra[] Returns an array of Palabra objects
     //     */
