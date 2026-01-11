@@ -13,9 +13,13 @@ class PalabraType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('texto', TextareaType::class, [
-                'label' => 'Escribe tu palabra',
-                'attr' => ['rows' => 3]
+            ->add('palabra', null, [
+                'label' => false,
+                'attr' => ['placeholder' => 'Palabra', 'class' => 'form-control', 'style' => 'margin-bottom: 5px; font-weight: bold;']
+            ])
+            ->add('definicion', TextareaType::class, [
+                'label' => false,
+                'attr' => ['placeholder' => 'Definición...', 'rows' => 3, 'class' => 'form-control']
             ]);
     }
 

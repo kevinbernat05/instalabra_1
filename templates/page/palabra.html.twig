@@ -4,9 +4,11 @@
 {% endblock %}
 
 {% block body %}
-	<h1>{{ palabra.texto }}</h1>
+	<h1>{{ palabra.palabra }}</h1>
 
-
+	<p>
+		{{ palabra.definicion }}
+	</p>
 	<p>
 		Publicado por
 		<strong>{{ palabra.usuario.nombre }}</strong><br>

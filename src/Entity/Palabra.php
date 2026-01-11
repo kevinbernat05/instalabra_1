@@ -13,8 +13,11 @@ class Palabra
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     private int $id;
 
+    #[ORM\Column(type: "string", length: 255)]
+    private string $palabra;
+
     #[ORM\Column(type: "text")]
-    private string $texto;
+    private string $definicion;
 
     #[ORM\ManyToOne(targetEntity: Usuario::class, inversedBy: "palabras")]
     #[ORM\JoinColumn(nullable: false)]
@@ -43,14 +46,25 @@ class Palabra
         return $this->id;
     }
 
-    public function getTexto(): ?string
+    public function getPalabra(): ?string
     {
-        return $this->texto;
+        return $this->palabra;
     }
 
-    public function setTexto(string $texto): self
+    public function setPalabra(string $palabra): self
     {
-        $this->texto = $texto;
+        $this->palabra = $palabra;
+        return $this;
+    }
+
+    public function getDefinicion(): ?string
+    {
+        return $this->definicion;
+    }
+
+    public function setDefinicion(string $definicion): self
+    {
+        $this->definicion = $definicion;
         return $this;
     }
 

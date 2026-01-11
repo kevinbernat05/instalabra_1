@@ -10,7 +10,7 @@
 			{% for palabra in topWords %}
 				<li>
 					<span class="word-name">
-						<a href="{{ path('palabra_show', {id: palabra.0.id}) }}" style="color:inherit; text-decoration:none;">{{ palabra.0.texto }}</a>
+						<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}" style="color:inherit; text-decoration:none;">{{ palabra.palabraEntity.palabra }}</a>
 					</span>
 					<div class="vote-bar">
 						<div class="fill" style="width: {{ (palabra.likesCount / maxLikes * 100)|round }}%;"></div>
