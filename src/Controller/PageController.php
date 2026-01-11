@@ -60,12 +60,32 @@ final class PageController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // Traer todas las palabras ordenadas por fecha descendente (más recientes primero)
-        $palabras = $palabraRepository->findBy([], ['fechaCreacion' => 'DESC']);
+        $filter = $request->query->get('filter', 'foryou');
+        /** @var Usuario|null $user */
+        $user = $this->getUser();
+
+        if ($filter === 'following' && $user) {
+            // Obtener IDs de usuarios seguidos
+            $followedUsers = [];
+            foreach ($user->getSeguimientosQueHace() as $seguimiento) {
+                $followedUsers[] = $seguimiento->getSeguido();
+            }
+            // Incluirse a uno mismo también? Típicamente sí o no, depende. 
+            // Vamos a incluir solo seguidos.
+
+            $palabras = $palabraRepository->findBy(
+                ['usuario' => $followedUsers],
+                ['fechaCreacion' => 'DESC']
+            );
+        } else {
+            // For You = Todos
+            $palabras = $palabraRepository->findBy([], ['fechaCreacion' => 'DESC']);
+        }
 
         return $this->render('page/index.html.twig', [
             'form' => $form->createView(),
             'palabras' => $palabras,
+            'currentFilter' => $filter
         ]);
     }
 
@@ -377,6 +397,34 @@ final class PageController extends AbstractController
         return $this->redirect($request->headers->get('referer'));
     }
 
+
+    public function rankingWidget(
+        PalabraRepository $palabraRepository,
+        UsuarioRepository $usuarioRepository
+    ): Response {
+        $now = $this->timeService->getNow();
+        $startDate = (clone $now)->modify('-1 day');
+
+        $topPalabras = $palabraRepository->findTopByLikes(5, $startDate);
+
+        // Calculate max likes for progress bar
+        $maxLikes = 1;
+        if (!empty($topPalabras)) {
+            $maxLikes = $topPalabras[0]['likesCount'];
+            if ($maxLikes == 0)
+                $maxLikes = 1;
+        }
+
+        // Get random users or top users as suggestions
+        $suggestedUsers = $usuarioRepository->findTopUsersByFollowers(3);
+
+        return $this->render('page/sidebar_right.html.twig', [
+            'topWords' => $topPalabras,
+            'maxLikes' => $maxLikes,
+            'suggestedUsers' => $suggestedUsers
+        ]);
+    }
+
     #[Route('/palabra/{id}', name: 'palabra_show')]
     public function show(Palabra $palabra): Response
     {
@@ -384,5 +432,4 @@ final class PageController extends AbstractController
             'palabra' => $palabra,
         ]);
     }
-
 }

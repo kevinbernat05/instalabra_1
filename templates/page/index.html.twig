@@ -4,58 +4,134 @@
 {% endblock %}
 
 {% block body %}
-	<h2>Publica tu palabra</h2>
+	<!-- Botones para ti y siguiendo -->
+	<div class="feed-buttons">
+		<a href="{{ path('app_home', {'filter': 'foryou'}) }}" style="text-decoration:none; color:inherit; flex:1;">
+			<button id="for-you" class="{{ currentFilter is defined and currentFilter == 'foryou' ? 'active' : (currentFilter is not defined ? 'active' : '') }}" style="width:100%;">Para ti</button>
+		</a>
+		<a href="{{ path('app_home', {'filter': 'following'}) }}" style="text-decoration:none; color:inherit; flex:1;">
+			<button id="following" class="{{ currentFilter is defined and currentFilter == 'following' ? 'active' : '' }}" style="width:100%;">Siguiendo</button>
+		</a>
+	</div>
 
+	<!-- Formulario de Publicación -->
 	{% if app.user %}
-		{{ form_start(form) }}
-		{{ form_row(form.texto, {'attr': {'placeholder': 'Escribe tu palabra...', 'rows': 3}}) }}
-		<button type="submit">Publicar</button>
-		{{ form_end(form) }}
-	{% else %}
-		<p>Debes
-			<a href="{{ path('app_login') }}">iniciar sesión</a>
-			para publicar.</p>
+		<div style="padding: 16px; border-bottom: 1px solid #eff3f4;">
+			{{ form_start(form) }}
+			{{ form_row(form.texto, {'attr': {'placeholder': '¿Qué estás pensando?', 'rows': 2, 'style': 'width: 100%; border: none; outline: none; font-size: 18px; resize: none; font-family: inherit;'}}) }}
+			<div style="display:flex; justify-content: flex-end;">
+				<button type="submit" class="publicar" style="width: auto; padding: 8px 16px; font-size: 14px;">Publicar</button>
+			</div>
+			{{ form_end(form) }}
+		</div>
 	{% endif %}
 
-	<h2>Feed de palabras</h2>
 	{% for palabra in palabras %}
-		<div class="palabra">
-			<p>
-				<img src="{{ palabra.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ palabra.usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ palabra.usuario.nombre }}" width="30" height="30" style="border-radius:50%; vertical-align: middle; margin-right: 5px;">
-				<strong>{{ palabra.usuario.nombre }}</strong>
-			</p>
-			<p>
-				<a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
-					{{ palabra.texto }}
-				</a>
-			</p>
-			<small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
+		<section class="single_post">
+			<div class="post_header">
+				<div class="user_info">
+					<img src="{{ palabra.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ palabra.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ palabra.usuario.nombre }}">
+					<span>
+						<a href="{{ path('app_usuario_perfil', {id: palabra.usuario.id}) }}" style="color: inherit; text-decoration: none;">
+							{{ palabra.usuario.nombre }}
+						</a>
+					</span>
+					<small style="color: #536471; font-weight: normal; margin-left: 5px;">·
+						{{ palabra.fechaCreacion|date('d M') }}</small>
+				</div>
+			</div>
 
-			{% if app.user %}
-				<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
-					{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
-					<button type="submit">
-						{% if liked %}💖 Ya te gusta ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }}){% else %}👍 Like ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }})
+			<p style="font-size: 18px; font-weight: 500; margin-bottom: 5px;">
+				<a href="{{ path('palabra_show', {id: palabra.id}) }}" style="color: inherit; text-decoration: none;">{{ palabra.texto }}</a>
+			</p>
+
+
+			<div
+				class="post-actions">
+				<!-- LIKE -->
+				<div class="action">
+					{% if app.user %}
+						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+							{% set liked = false %}
+							{% for v in palabra.valoraciones %}
+								{% if v.likeActiva and v.usuario == app.user %}
+									{% set liked = true %}
+								{% endif %}
+							{% endfor %}
+							<button type="submit" style="background:none; border:none; cursor:pointer; padding:0;">
+								<img src="{{ asset('multimedia/like.png') }}" alt="Me gusta" style="{{ liked ? 'filter: hue-rotate(150deg);' : '' }}">
+							</button>
+						</form>
+					{% else %}
+						<img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
+					{% endif %}
+					<span class="count">{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</span>
+				</div>
+
+				<!-- COMMENT ICON -->
+				<div class="action" onclick="document.getElementById('comments-{{ palabra.id }}').scrollIntoView({behavior: 'smooth'});">
+					<img src="{{ asset('multimedia/comment.png') }}" alt="Comentar">
+					<span class="count">{{ palabra.comentarios|length }}</span>
+				</div>
+
+				<!-- SHARE (Visual ONLY) -->
+				<div class="action" style="cursor: default;">
+					<img src="{{ asset('multimedia/share.png') }}" alt="Compartir">
+					<span class="count">0</span>
+				</div>
+
+				<!-- DELETE -->
+				{% if app.user and app.user == palabra.usuario %}
+					<div class="action">
+						<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar?');">
+							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
+							<button type="submit" style="background:none; border:none; cursor:pointer; color: red; font-size: 18px;">&times;</button>
+						</form>
+					</div>
+				{% endif %}
+			</div>
+
+			<!-- COMENTARIOS IN FEED -->
+			<div class="comments" id="comments-{{ palabra.id }}">
+				{% for comentario in palabra.comentarios|slice(0, 3) %}
+					<div class="comment">
+						<img src="{{ comentario.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ comentario.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ comentario.usuario.email }}">
+						<div class="comment-text">
+							<span class="username">
+								<a href="{{ path('app_usuario_perfil', {id: comentario.usuario.id}) }}" style="color:inherit; text-decoration:none;">{{ comentario.usuario.nombre }}</a>
+							</span>
+							<span class="message">{{ comentario.texto ?? comentario.contenido ?? '' }}</span>
+						</div>
+						{% if app.user and app.user == comentario.usuario %}
+							<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');" style="margin-left: auto;">
+								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comentario.id) }}">
+								<button type="submit" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+							</form>
 						{% endif %}
-					</button>
-				</form>
+					</div>
+				{% else %}
+					<p style="padding-left: 60px; color: #999; font-size: 13px;">Aún no hay comentarios.</p>
+				{% endfor %}
 
-				{# Botón de Comentarios #}
-				<button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
-					💬 Comentarios ({{ palabra.comentarios|length }})
-				</button>
+				{% if palabra.comentarios|length > 3 %}
+					<div style="padding-left: 60px; margin-top: 5px;">
+						<a href="{{ path('palabra_show', {id: palabra.id}) }}" style="font-size: 13px; color: #d291ff;">Ver todos los comentarios...</a>
+					</div>
+				{% endif %}
 
-				{# Botón de Eliminar #}
-				{% if app.user == palabra.usuario %}
-					<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar auto-publicación?');" style="display:inline; margin-left: 10px;">
-						<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
-						<button type="submit" style="color:red;">[Eliminar]</button>
+				{# Formulario de comentario rápido opcional #}
+				{% if app.user %}
+					<form action="{{ path('palabra_comentar', { id: palabra.id }) }}" method="post" style="padding-left: 60px; margin-top: 10px; display:flex; gap: 5px;">
+						<input type="text" name="comentario_texto" placeholder="Agrega un comentario..." required style="flex:1; border: 1px solid #ddd; border-radius: 20px; padding: 5px 10px; outline:none; font-size: 13px;">
+						<button type="submit" style="background:none; border:none; color: #d291ff; font-weight:bold; cursor:pointer;">Publicar</button>
 					</form>
 				{% endif %}
-			{% endif %}
-		</div>
-		------------------------------------------------
+			</div>
+
+		</section>
 	{% else %}
-		<p>No hay palabras publicadas todavía.</p>
+		<div style="padding: 20px; text-align: center; color: #536471;">
+			<p>No hay publicaciones aún. ¡Sé el primero!</p>
+		</div>
 	{% endfor %}
 {% endblock %}

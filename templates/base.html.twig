@@ -2,60 +2,90 @@
 <html lang="es">
 	<head>
 		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>
 			{% block title %}Instalabra
 			{% endblock %}
 		</title>
-		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-		<link rel="stylesheet" href="{{ asset('css/app.css') }}"> {% block stylesheets %}{% endblock %}{% block javascripts %}{% endblock %}
+
+		<!-- Links -->
+		<link
+		rel="icon" type="image/png" href="{{ asset('multimedia/logo.png') }}">
+		<!-- Linking the correct CSS file -->
+		<link rel="stylesheet" href="{{ asset('css/estilos.css') }}"> {% block stylesheets %}{% endblock %}
+
+		<!-- Fuentes -->
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> {% block javascripts %}{% endblock %}
 		</head>
+
 		<body>
-			<header>
-				<h1>
-					<a href="{{ path('app_home') }}" style="text-decoration:none; color:inherit;">Instalabra</a>
-				</h1>
-				<nav>
-					<ul>
-						<li>
-							<a href="{{ path('app_home') }}">Inicio</a>
-						</li>
-						{% if app.user %}
-							<li>
-								<a href="{{ path('app_ranking') }}">Ranking</a>
-							</li>
-							<li>
-								<a href="{{ path('app_perfil') }}">Mi Perfil</a>
-							</li>
-							<li>
-								<a href="{{ path('app_logout') }}">Cerrar sesión</a>
-							</li>
-						{% else %}
-							<li>
-								<a href="{{ path('app_login') }}">Login</a>
-							</li>
-							<li>
-								<a href="{{ path('app_register') }}">Registro</a>
-							</li>
-							<li>
-								<a href="{{ path('app_ranking') }}">Ranking</a>
-							</li>
-						{% endif %}
-					</ul>
-				</nav>
-			</header>
+			<div
+				class="container">
+				<!-- Barra lateral izquierda -->
+				<aside class="menu-bar-left">
+					<div class="logo">
+						<img src="{{ asset('multimedia/logo.png') }}" alt="Logo de Instalabra">
+					</div>
 
-			<main>
-				{% for label, messages in app.flashes %}
-					{% for message in messages %}
-						<div class="flash-{{ label }}">
-							{{ message }}
-						</div>
+					<nav class="menu">
+						<ul>
+							<li>
+								<a href="{{ path('app_home') }}">Inicio</a>
+							</li>
+							<li>
+								<a href="{{ path('app_ranking') }}">Explorar</a>
+							</li>
+							<li>
+								<a href="#">Mensajes</a>
+							</li>
+							{% if app.user %}
+								<li>
+									<a href="{{ path('app_perfil') }}">Perfil</a>
+								</li>
+								<li>
+									<a href="{{ path('app_logout') }}">Cerrar sesión</a>
+								</li>
+							{% else %}
+								<li>
+									<a href="{{ path('app_login') }}">Login</a>
+								</li>
+							{% endif %}
+						</ul>
+					</nav>
+
+					<button class="publicar" onclick="document.querySelector('form[name=\'palabra\'] input[type=\'text\']').focus(); window.scrollTo({top:0, behavior:'smooth'});">Publicar</button>
+
+					<div
+						class="menu-bar">
+						<!-- Toggle menu functionality can be added here if needed -->
+						<img id="toggle-menu" src="{{ asset('multimedia/menu_bar.png') }}" alt="Menu bar">
+					</div>
+				</aside>
+
+				<!-- Contenido principal (Feed) -->
+				<main class="feed">
+					{% for label, messages in app.flashes %}
+						{% for message in messages %}
+							<div class="flash-{{ label }}" style="padding: 10px; background: #f0f0f0; margin: 5px; border-left: 4px solid #d291ff;">
+								{{ message }}
+							</div>
+						{% endfor %}
 					{% endfor %}
-				{% endfor %}
 
-				{% block body %}{% endblock %}
-			</main>
+					{% block body %}{% endblock %}
+				</main>
 
+				<!-- Barra lateral derecha -->
+				{{ render(controller('App\\Controller\\PageController::rankingWidget')) }}
+			</div>
+
+			<!-- Flecha para que se pueda plegar/desplegar el menú -->
+			<div class="toggle-arrow" id="toggle-arrow">
+				<img src="{{ asset('multimedia/arrow.png') }}" alt="Flecha para plegar/desplegar el menú">
+			</div>
+
+			<!-- Scripts-->
+			<!-- Debug Mode Widget -->
 			{% if app.session.get('debug_mode') %}
 				<div style="position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #ccc; padding: 15px; z-index: 9999; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: sans-serif; min-width: 250px;">
 					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -81,15 +111,14 @@
 						<a href="{{ path('debug_toggle') }}" style="flex: 1; text-align: center; padding: 6px; background: #d32f2f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; text-decoration: none; display: inline-block; box-sizing: border-box;">Desactivar</a>
 					</div>
 				</div>
+			{% else %}
+				<!-- Footer link for debug -->
+				<div style="position:fixed; bottom: 20px; right: 20px; z-index: 9999;">
+					<a href="{{ path('debug_toggle') }}" style="display: block; width: 40px; height: 40px; background: #eee; border-radius: 50%; text-align: center; line-height: 40px; font-size: 20px; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" title="Activar Modo Debug">🛠️</a>
+				</div>
 			{% endif %}
 
-			<footer>
-				<p>&copy; 2025 Instalabra</p>
-				<p style="font-size: 0.8em; margin-top: 5px;">
-					{% if not app.session.get('debug_mode') %}
-						<a href="{{ path('debug_toggle') }}" style="color: #666; text-decoration: none; border: 1px solid #ccc; padding: 3px 8px; border-radius: 4px; background: #f9f9f9;">🛠️ Activar Debug</a>
-					{% endif %}
-				</p>
-			</footer>
+			<script src="{{ asset('js/instalabra.js') }}"></script>
+			<script src="{{ asset('js/menu.js') }}"></script>
 		</body>
 	</html>
