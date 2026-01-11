@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar perfil</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Editar perfil</h1>
+        <nav>
+            <a href="{{ path('app_perfil') }}">Volver al perfil</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Subir o cambiar foto de perfil</h2>
+
+        {{ form_start(form, {'attr': {'enctype':'multipart/form-data'}}) }}
+            {{ form_row(form.fotoPerfil) }}
+            <button type="submit">Guardar foto</button>
+        {{ form_end(form) }}
+    </main>
+</body>
+</html>

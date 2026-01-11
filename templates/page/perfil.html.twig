@@ -12,26 +12,41 @@
             <ul>
                 <li><a href="{{ path('app_home') }}">Inicio</a></li>
                 <li><a href="{{ path('app_logout') }}">Cerrar sesión</a></li>
+                <li><a href="{{ path('perfil_editar') }}">Editar perfil</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <h2>Mis palabras publicadas</h2>
+        <section class="foto-perfil">
+            <h2>Foto de perfil</h2>
+            <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}"
+                 alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
 
-        {% if palabras|length > 0 %}
-            {% for palabra in palabras %}
-                <div class="palabra">
-                    <p>{{ palabra.texto }}</p>
-                    <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
+            {% if app.user and app.user.id == usuario.id %}
+                <a href="{{ path('perfil_editar') }}">
+                    <button>Editar foto de perfil</button>
+                </a>
+            {% endif %}
+        </section>
 
-                    {# Contador de likes #}
-                    <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>Aún no has publicado ninguna palabra.</p>
-        {% endif %}
+        <hr>
+
+        <section class="palabras">
+            <h2>Mis palabras publicadas</h2>
+
+            {% if palabras|length > 0 %}
+                {% for palabra in palabras %}
+                    <div class="palabra">
+                        <p>{{ palabra.texto }}</p>
+                        <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
+                        <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Aún no has publicado ninguna palabra.</p>
+            {% endif %}
+        </section>
     </main>
 
     <footer>

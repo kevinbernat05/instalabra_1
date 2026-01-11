@@ -31,6 +31,9 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type:"text", nullable:true)]
     private ?string $biografia;
 
+    #[ORM\Column(type:"string", length:255, nullable:true)]
+    private ?string $fotoPerfil = null;
+
     #[ORM\OneToMany(mappedBy:"usuario", targetEntity:Palabra::class)]
     private Collection $palabras;
 
@@ -102,5 +105,16 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getFotoPerfil(): ?string
+    {
+        return $this->fotoPerfil;
+    }
+
+    public function setFotoPerfil(?string $fotoPerfil): self
+    {
+        $this->fotoPerfil = $fotoPerfil;
+        return $this;
     }
 }

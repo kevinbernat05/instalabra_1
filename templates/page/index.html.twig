@@ -42,45 +42,24 @@
                         </p>
                         <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 
-                        <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
-
                         {% if app.user %}
-                            {# Botón de Like #}
                             <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
                                 {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
                                 <button type="submit">
-                                    {% if liked %}💖 Ya te gusta{% else %}👍 Like{% endif %}
+                                    {% if liked %}💖 Ya te gusta ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }}){% else %}👍 Like ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }}){% endif %}
                                 </button>
                             </form>
 
-                            {# Botón de Comentarios (toggle) #}
-                            <button type="button" onclick="document.getElementById('comentarios-{{ palabra.id }}').classList.toggle('hidden')">
+                            {# Botón de Comentarios #}
+                            <button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
                                 💬 Comentarios ({{ palabra.comentarios|length }})
                             </button>
-
-                            <div id="comentarios-{{ palabra.id }}" class="hidden">
-                                {# Formulario para nuevo comentario #}
-                                <form action="{{ path('palabra_comentar', {'id': palabra.id}) }}" method="post">
-                                    <input type="text" name="comentario_texto" placeholder="Escribe tu comentario..." required>
-                                    <button type="submit">Comentar</button>
-                                </form>
-
-                                {# Lista de comentarios existentes #}
-                                {% for comentario in palabra.comentarios %}
-                                    <div class="comentario">
-                                        <p><strong>{{ comentario.usuario.nombre }}</strong>: {{ comentario.texto }}</p>
-                                        <small>{{ comentario.fechaCreacion|date('d/m/Y H:i') }}</small>
-                                    </div>
-                                {% else %}
-                                    <p>No hay comentarios todavía.</p>
-                                {% endfor %}
-                            </div>
                         {% endif %}
                     </div>
+                    ------------------------------------------------
                 {% else %}
                     <p>No hay palabras publicadas todavía.</p>
                 {% endfor %}
-
     </main>
     <footer>
         <p>&copy; 2025 Instalabra</p>
