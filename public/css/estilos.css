@@ -1,0 +1,493 @@
+/* Estilos para la aplicación Instalabra */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* ================== CONTENEDOR PRINCIPAL ================== */
+.container {
+    display: flex;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* ================== BARRA IZQUIERDA ================== */
+.menu-bar-left {
+    width: 275px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    border-right: 1px solid #eff3f4;
+
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Logo */
+.menu-bar-left .logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+/* Menú */
+.menu-bar-left .menu {
+    width: 100%;
+}
+
+.menu-bar-left .menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-bar-left .menu li {
+    margin-bottom: 8px;
+}
+
+.menu-bar-left .menu a {
+    text-decoration: none;
+    color: #0f1419;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 30px;
+    transition: background 0.2s;
+    width: fit-content;
+}
+
+.menu-bar-left .menu a:hover {
+    background: rgba(210, 145, 255, 0.1);
+}
+
+/* Botón de publicar */
+.menu-bar-left .publicar {
+    margin-top: 20px;
+    padding: 16px 32px;
+    background-color: #d291ff;
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 90%;
+}
+
+.menu-bar-left .publicar:hover {
+    background-color: #b26eff;
+}
+
+/* Menu bar toggle */
+.menu-bar-left .menu-bar {
+    margin-top: auto;
+    width: 100%;
+}
+
+.menu-bar-left .menu-bar img {
+    width: 40px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.menu-bar-left .menu-bar img:hover {
+    opacity: 0.7;
+}
+
+/* ================== FLECHA TOGGLE ================== */
+.toggle-arrow {
+    position: fixed;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1000;
+    background-color: #d291ff;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, background 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-arrow:hover {
+    background-color: #b26eff;
+}
+
+.toggle-arrow img {
+    width: 18px;
+    height: 18px;
+}
+
+/* ================== FEED CENTRAL ================== */
+.feed {
+    flex: 1;
+    max-width: 600px;
+    border-left: 1px solid #eff3f4;
+    border-right: 1px solid #eff3f4;
+    min-height: 100vh;
+}
+
+/* Botones Para ti / Siguiendo */
+.feed-buttons {
+    display: flex;
+    border-bottom: 1px solid #eff3f4;
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    z-index: 10;
+}
+
+.feed-buttons button {
+    flex: 1;
+    background: none;
+    border: none;
+    font-weight: 700;
+    font-size: 15px;
+    color: #536471;
+    cursor: pointer;
+    padding: 16px;
+    transition: background 0.2s;
+    position: relative;
+}
+
+.feed-buttons button:hover {
+    background-color: rgba(210, 145, 255, 0.1);
+}
+
+.feed-buttons button.active {
+    color: #0f1419;
+}
+
+.feed-buttons button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background-color: #d291ff;
+    border-radius: 2px;
+}
+
+/* ================== POSTS ================== */
+.single_post {
+    padding: 16px;
+    border-bottom: 1px solid #eff3f4;
+    transition: background 0.2s;
+}
+
+.single_post:hover {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+/* Cabecera del post */
+.post_header {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+/* User info */
+.post_header .user_info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.post_header .user_info img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.post_header .user_info span {
+    font-weight: 700;
+    font-size: 15px;
+    color: #0f1419;
+}
+
+/* Contenido del post */
+.single_post p {
+    font-size: 15px;
+    color: #0f1419;
+    line-height: 1.5;
+    margin-left: 60px;
+}
+
+/* ================== COMENTARIOS ================== */
+/* Contenedor */
+.comments {
+    margin-top: 12px;
+    padding-left: 60px; 
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    color: #536471;
+}
+
+.comment {
+    background-color: rgba(210,145,255,0.1);
+    border-radius: 15px;
+    padding: 8px 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    transition: background 0.2s;
+}
+
+.comment:hover {
+    background-color: rgba(210,145,255,0.2);
+}
+
+/* Foto del usuario que comenta */
+.comment img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Texto del comentario */
+.comment-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-text span.username {
+    font-weight: 700;
+    color: #0f1419;
+    font-size: 13px;
+}
+
+.comment-text span.message {
+    font-size: 14px;
+    color: #536471;
+}
+
+.comments::before {
+    content: '';
+    display: block;
+    height: 1px;
+    background-color: #dcdcdc; /* gris clarito */
+    margin-bottom: 8px;
+    border-radius: 1px;
+}
+
+/* ================== BARRA DERECHA ================== */
+.menu-bar-right {
+    width: 350px;
+    padding: 20px 20px 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    height: fit-content;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+/* Barra de búsqueda */
+.search-box {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    padding-bottom: 10px;
+    z-index: 5;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 30px;
+    border: 1px solid #eff3f4;
+    background-color: #eff3f4;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    transition: background 0.2s, border 0.2s;
+}
+
+.search-box input:focus {
+    outline: none;
+    background-color: #fff;
+    border-color: #d291ff;
+    box-shadow: 0 0 0 1px #d291ff;
+}
+
+/* Boxes (Ranking y Sugerencias) */
+.box {
+    background-color: #f7f9f9;
+    border: 2px solid #d291ff;
+    border-radius: 16px;
+    padding: 16px 20px;
+    overflow: hidden;
+}
+
+.box h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f1419;
+    margin-bottom: 16px;
+}
+
+/* ================== RANKING DIARIO ================== */
+#word-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#word-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eff3f4;
+}
+
+#word-list li:last-child {
+    border-bottom: none;
+}
+
+#word-list li .word-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #0f1419;
+    min-width: 100px;
+}
+
+/* Barra de votos */
+.vote-bar {
+    flex: 1;
+    position: relative;
+    height: 28px;
+    border-radius: 14px;
+    background-color: rgba(210, 145, 255, 0.15);
+    overflow: hidden;
+}
+
+.vote-bar .fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #d291ff, #b26eff);
+    border-radius: 14px;
+    transition: width 0.4s ease;
+}
+
+.vote-bar .vote-number {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    z-index: 2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ================== SUGERENCIAS DE USUARIOS ================== */
+.user-suggestions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#user-suggestions li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    transition: background 0.2s;
+    border-radius: 8px;
+}
+
+#user-suggestions li:hover {
+    background-color: rgba(210, 145, 255, 0.08);
+}
+
+#user-suggestions img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#user-suggestions .user-info-suggestion {
+    flex: 1;
+}
+
+#user-suggestions .user-info-suggestion .username {
+    font-weight: 700;
+    font-size: 15px;
+    color: #0f1419;
+    display: block;
+}
+
+#user-suggestions .user-info-suggestion .handle {
+    font-size: 14px;
+    color: #536471;
+}
+
+#user-suggestions button {
+    background-color: #d291ff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#user-suggestions button:hover {
+    background-color: #b26eff;
+}
+
+/* ================== SCROLLBAR PERSONALIZADA ================== */
+.menu-bar-right::-webkit-scrollbar {
+    width: 6px;
+}
+
+.menu-bar-right::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.menu-bar-right::-webkit-scrollbar-thumb {
+    background: #d291ff;
+    border-radius: 3px;
+}
+
+.menu-bar-right::-webkit-scrollbar-thumb:hover {
+    background: #b26eff;
+}

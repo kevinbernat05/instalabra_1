@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instalabra</title>
+    
+    <!-- Links -->
+    <link rel="icon" type="image/png" href="multimedia/logo.png">
+    <link rel="stylesheet" href="css/estilos.css">
+
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container">
+        <!-- Barra lateral izquierda -->
+        <aside class="menu-bar-left">
+            <div class="logo">
+                <img src="multimedia/logo.png" alt="Logo de Instalabra">
+            </div>
+
+            <nav class="menu">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="explorar.html">Explorar</a></li>
+                    <li><a href="mensajes.html">Mensajes</a></li>
+                    <li><a href="palabras.html">Palabras</a></li>
+                </ul>
+            </nav>
+
+            <button class="publicar">Publicar</button>
+
+            <div class="menu-bar">
+                <img id="toggle-menu" src="multimedia/menu_bar.png" alt="Menu bar">
+            </div>
+        </aside>
+
+        <!-- Contenido principal (Feed) -->
+        <main class="feed">
+            <!-- Botones para ti y siguiendo-->
+            <div class="feed-buttons">
+                <button id="for-you" class="active">Para ti</button>
+                <button id="following">Siguiendo</button>
+            </div>
+
+            <section class="single_post">
+                <div class="post_header">
+                    <!-- Información del usuario de prueba -->
+                    <div class="user_info">
+                        <!-- Simulo la informacion del usuario con js -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Barra lateral derecha -->
+        <aside class="menu-bar-right">
+            <div class="search-box">
+                <input type="text" placeholder="Buscar">
+            </div>
+
+            <!-- Ranking diario de las palabras mas valoradas del dia -->
+            <div class="rank-diary box">
+                <h3>Palabras del día</h3>
+                <ol class="word-list" id="word-list">
+                    <!-- Simulo las palabras del dia con js -->
+                </ol>
+            </div>
+
+            <!-- Sugerencias de usuarios a seguir -->
+            <div class="suggestions box">
+                <h3>Usuarios sugeridos</h3>
+                <ul class="user-suggestions" id="user-suggestions">
+                    <!-- Simulo las sugerencias de usuarios con js -->
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Flecha para que se pueda plegar/desplegar el menú -->
+    <div class="toggle-arrow" id="toggle-arrow">
+        <img src="multimedia/arrow.png" alt="Flecha para plegar/desplegar el menú">
+    </div>
+
+    <!-- Scripts-->
+    <script src="js/instalabra.js"></script>
+    <script src="js/menu.js"></script>
+</body>
+</html>
