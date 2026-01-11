@@ -1,21 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Perfil de {{ usuario.nombre }}</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Perfil de {{ usuario.nombre }}</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ path('app_home') }}">Inicio</a></li>
-                <li><a href="{{ path('app_logout') }}">Cerrar sesión</a></li>
-                <li><a href="{{ path('perfil_editar') }}">Editar perfil</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends 'base.html.twig' %}
+{% block title %}Mi Perfil - Instalabra
+{% endblock %}
+{% block body %}
 
     <main>
         <section class="foto-perfil">
@@ -25,12 +11,6 @@
         <h2>Mis palabras publicadas</h2>
         
         <div style="margin-bottom: 20px;">
-             {# Note: Since this controller method only passes 'usuario', I cannot access followersCount usually unless passed. 
-                Wait, I need to update the Perfil Controller Action to pass these counts too or simpler: lazy load them via entity methods if I added them?
-                No, I put the count methods in Repository.
-                So I should update PageController::perfil to pass these counts OR 
-                Update template to just use `usuario.seguimientosQueRecibe|length` which is easier!
-             #}
              <p>
                 <strong>Seguidores:</strong> {{ usuario.seguimientosQueRecibe|length }} | 
                 <strong>Seguidos:</strong> {{ usuario.seguimientosQueHace|length }}
@@ -46,8 +26,8 @@
 
         <hr>
 
-        <section class="palabras">
-            <h2>Mis palabras publicadas</h2>
+    <section class="palabras">
+        <h2>Mis palabras publicadas</h2>
 
             {% if palabras|length > 0 %}
                 {% for palabra in palabras %}
@@ -84,8 +64,6 @@
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Instalabra</p>
-    </footer>
 </body>
 </html>
+{% endblock %}

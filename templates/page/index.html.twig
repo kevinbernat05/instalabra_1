@@ -1,68 +1,61 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Instalabra</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Bienvenido a Instalabra</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ path('app_home') }}">Inicio</a></li>
-                <li><a href="{{ path('app_login') }}">Login</a></li>
-                <li><a href="{{ path('app_register') }}">Registro</a></li>
-                <li><a href="{{ path('app_perfil') }}">Perfil</a></li>
-                <li><a href="{{ path('app_ranking') }}">Ranking</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends 'base.html.twig' %}
 
-    <main>
-        <h2>Publica tu palabra</h2>
+{% block title %}Inicio - Instalabra
+{% endblock %}
 
-        {% if app.user %}
-            {{ form_start(form) }}
-                {{ form_row(form.texto, {'attr': {'placeholder': 'Escribe tu palabra...', 'rows': 3}}) }}
-                <button type="submit">Publicar</button>
-            {{ form_end(form) }}
-        {% else %}
-            <p>Debes <a href="{{ path('app_login') }}">iniciar sesión</a> para publicar.</p>
-        {% endif %}
+{% block body %}
+	<h2>Publica tu palabra</h2>
 
-            <h2>Feed de palabras</h2>
-                {% for palabra in palabras %}
-                    <div class="palabra">
-                        <p><strong>{{ palabra.usuario.nombre }}</strong></p>
-                        <p>
-                            <a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
-                                {{ palabra.texto }}
-                            </a>
-                        </p>
-                        <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
+	{% if app.user %}
+		{{ form_start(form) }}
+		{{ form_row(form.texto, {'attr': {'placeholder': 'Escribe tu palabra...', 'rows': 3}}) }}
+		<button type="submit">Publicar</button>
+		{{ form_end(form) }}
+	{% else %}
+		<p>Debes
+			<a href="{{ path('app_login') }}">iniciar sesión</a>
+			para publicar.</p>
+	{% endif %}
 
-                        {% if app.user %}
-                            <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
-                                {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
-                                <button type="submit">
-                                    {% if liked %}💖 Ya te gusta ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }}){% else %}👍 Like ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }}){% endif %}
-                                </button>
-                            </form>
+	<h2>Feed de palabras</h2>
+	{% for palabra in palabras %}
+		<div class="palabra">
+			<p>
+				<img src="{{ palabra.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ palabra.usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ palabra.usuario.nombre }}" width="30" height="30" style="border-radius:50%; vertical-align: middle; margin-right: 5px;">
+				<strong>{{ palabra.usuario.nombre }}</strong>
+			</p>
+			<p>
+				<a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
+					{{ palabra.texto }}
+				</a>
+			</p>
+			<small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 
-                            {# Botón de Comentarios #}
-                            <button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
-                                💬 Comentarios ({{ palabra.comentarios|length }})
-                            </button>
-                        {% endif %}
-                    </div>
-                    ------------------------------------------------
-                {% else %}
-                    <p>No hay palabras publicadas todavía.</p>
-                {% endfor %}
-    </main>
-    <footer>
-        <p>&copy; 2025 Instalabra</p>
-    </footer>
-</body>
-</html>
+			{% if app.user %}
+				<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+					{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
+					<button type="submit">
+						{% if liked %}💖 Ya te gusta ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }}){% else %}👍 Like ({{ palabra.valoraciones|filter(v => v.likeActiva)|length }})
+						{% endif %}
+					</button>
+				</form>
+
+				{# Botón de Comentarios #}
+				<button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
+					💬 Comentarios ({{ palabra.comentarios|length }})
+				</button>
+
+				{# Botón de Eliminar #}
+				{% if app.user == palabra.usuario %}
+					<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar auto-publicación?');" style="display:inline; margin-left: 10px;">
+						<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
+						<button type="submit" style="color:red;">[Eliminar]</button>
+					</form>
+				{% endif %}
+			{% endif %}
+		</div>
+		------------------------------------------------
+	{% else %}
+		<p>No hay palabras publicadas todavía.</p>
+	{% endfor %}
+{% endblock %}
