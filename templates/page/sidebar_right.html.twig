@@ -35,7 +35,7 @@
 						<span class="username">{{ suggestion.nombre }}</span>
 						{# <span class="handle">{{ suggestion.email }}</span> #}
 					</div>
-					{% if app.user and app.user != suggestion %}
+					{% if app.user and app.user != suggestion and suggestion.id not in followingIds %}
 						<a href="{{ path('app_usuario_follow', {id: suggestion.id}) }}">
 							<button>Seguir</button>
 						</a>

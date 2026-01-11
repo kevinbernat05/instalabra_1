@@ -418,10 +418,20 @@ final class PageController extends AbstractController
         // Get random users or top users as suggestions
         $suggestedUsers = $usuarioRepository->findTopUsersByFollowers(3);
 
+        $followingIds = [];
+        $user = $this->getUser();
+        if ($user) {
+            /** @var \App\Entity\Usuario $user */
+            foreach ($user->getSeguimientosQueHace() as $seguimiento) {
+                $followingIds[] = $seguimiento->getSeguido()->getId();
+            }
+        }
+
         return $this->render('page/sidebar_right.html.twig', [
             'topWords' => $topPalabras,
             'maxLikes' => $maxLikes,
-            'suggestedUsers' => $suggestedUsers
+            'suggestedUsers' => $suggestedUsers,
+            'followingIds' => $followingIds
         ]);
     }
 
