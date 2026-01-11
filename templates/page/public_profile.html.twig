@@ -1,64 +1,75 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Perfil de {{ usuario.nombre }}{% endblock %}
+{% block title %}Perfil de
+	{{ usuario.nombre }}
+{% endblock %}
 
 {% block body %}
-    <section class="foto-perfil">
-        <h2>{{ usuario.nombre }}</h2>
-        <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}"
-                alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
-        
-        <div style="margin-bottom: 20px;">
-            <p>
-                <strong>Seguidores:</strong> {{ followersCount }} | 
-                <strong>Seguidos:</strong> {{ followingCount }}
-            </p>
-        </div>
+	<section class="foto-perfil">
+		<h2>{{ usuario.nombre }}</h2>
+		<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
 
-        {% if app.user and app.user != usuario %}
-            <div style="margin-top: 10px;">
-                {% if isFollowing %}
-                        <a href="{{ path('app_usuario_follow', {id: usuario.id}) }}"><button>Dejar de seguir</button></a>
-                {% else %}
-                        <a href="{{ path('app_usuario_follow', {id: usuario.id}) }}"><button>Seguir</button></a>
-                {% endif %}
-            </div>
-        {% endif %}
-    </section>
+		<div style="margin-bottom: 20px;">
+			<p>
+				<strong>Seguidores:</strong>
+				{{ followersCount }}
+				|
+				<strong>Seguidos:</strong>
+				{{ followingCount }}
+			</p>
+		</div>
 
-    <hr>
+		{% if app.user and app.user != usuario %}
+			<div style="margin-top: 10px;">
+				{% if isFollowing %}
+					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}">
+						<button>Dejar de seguir</button>
+					</a>
+				{% else %}
+					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}">
+						<button>Seguir</button>
+					</a>
+				{% endif %}
+			</div>
+		{% endif %}
+	</section>
 
-    <section class="palabras">
-        <h2>Palabras publicadas</h2>
+	<hr>
 
-        {% if palabras|length > 0 %}
-            {% for palabra in palabras %}
-                <div class="palabra">
-                    <p>
-                        <a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
-                            {{ palabra.texto }}
-                        </a>
-                    </p>
-                    <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
+	<section class="palabras">
+		<h2>Palabras publicadas</h2>
 
-                    {% if app.user %}
-                        <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
-                            {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
-                            <button type="submit">
-                                {% if liked %}💖 Ya te gusta{% else %}👍 Like{% endif %}
-                            </button>
-                        </form>
+		{% if palabras|length > 0 %}
+			{% for palabra in palabras %}
+				<div class="palabra">
+					<p>
+						<a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
+							{{ palabra.palabra }}
+						</a>
+					</p>
+					<p>{{ palabra.definicion }}</p>
+					<small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 
-                        <button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
-                            💬 Comentarios ({{ palabra.comentarios|length }})
-                        </button>
-                    {% else %}
-                            <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>Este usuario no ha publicado ninguna palabra.</p>
-        {% endif %}
-    </section>
+					{% if app.user %}
+						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+							{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
+							<button type="submit">
+								{% if liked %}💖 Ya te gusta{% else %}👍 Like
+								{% endif %}
+							</button>
+						</form>
+
+						<button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
+							💬 Comentarios ({{ palabra.comentarios|length }})
+						</button>
+					{% else %}
+						<p>👍 Likes:
+							{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
+					{% endif %}
+				</div>
+			{% endfor %}
+		{% else %}
+			<p>Este usuario no ha publicado ninguna palabra.</p>
+		{% endif %}
+	</section>
 {% endblock %}

@@ -1,51 +1,64 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ranking de palabras{% endblock %}
+{% block title %}Ranking de palabras
+{% endblock %}
 
 {% block body %}
-    <h1>Ranking de palabras por likes</h1>
+	<h1>Ranking de palabras por likes</h1>
 
-    <div style="margin-bottom: 20px;">
-        <a href="{{ path('app_ranking', {period: 'daily'}) }}" {% if period == 'daily' %}style="font-weight:bold"{% endif %}>Diario</a> |
-        <a href="{{ path('app_ranking', {period: 'weekly'}) }}" {% if period == 'weekly' %}style="font-weight:bold"{% endif %}>Semanal</a> |
-        <a href="{{ path('app_ranking', {period: 'monthly'}) }}" {% if period == 'monthly' %}style="font-weight:bold"{% endif %}>Mensual</a>
-    </div>
+	<div style="margin-bottom: 20px;">
+		<a href="{{ path('app_ranking', {period: 'daily'}) }}" {% if period == 'daily' %} style="font-weight:bold" {% endif %}>Diario</a>
+		|
+		<a href="{{ path('app_ranking', {period: 'weekly'}) }}" {% if period == 'weekly' %} style="font-weight:bold" {% endif %}>Semanal</a>
+		|
+		<a href="{{ path('app_ranking', {period: 'monthly'}) }}" {% if period == 'monthly' %} style="font-weight:bold" {% endif %}>Mensual</a>
+	</div>
 
-    <div style="display: flex; gap: 40px;">
-        <div style="flex: 1;">
-            <h2>Top Palabras</h2>
-            {% if palabras|length > 0 %}
-                <ol>
-                    {% for row in palabras %}
-                        {% set palabra = row[0] %}
-                        {% set likesCount = row.likesCount %}
-                        <li>
-                            <p><strong><a href="{{ path('app_usuario_perfil', {id: palabra.usuario.id}) }}">{{ palabra.usuario.nombre }}</a></strong>: {{ palabra.texto }}</p>
-                            <p>👍 Likes: {{ likesCount }}</p>
-                        </li>
-                    {% endfor %}
-                </ol>
-            {% else %}
-                <p>No hay palabras con likes todavía.</p>
-            {% endif %}
-        </div>
+	<div style="display: flex; gap: 40px;">
+		<div style="flex: 1;">
+			<h2>Top Palabras</h2>
+			{% if palabras|length > 0 %}
+				<ol>
+					{% for row in palabras %}
+						{% set palabra = row[0] %}
+						{% set likesCount = row.likesCount %}
+						<li>
+							<p>
+								<strong>
+									<a href="{{ path('app_usuario_perfil', {id: palabra.usuario.id}) }}">{{ palabra.usuario.nombre }}</a>
+								</strong>:
+								{{ palabra.palabra }}</p>
+							<p>👍 Likes:
+								{{ likesCount }}</p>
+						</li>
+					{% endfor %}
+				</ol>
+			{% else %}
+				<p>No hay palabras con likes todavía.</p>
+			{% endif %}
+		</div>
 
-        <div style="flex: 1;">
-            <h2>Top Usuarios</h2>
-            {% if usuarios|length > 0 %}
-                <ol>
-                    {% for row in usuarios %}
-                        {% set usuario = row[0] %}
-                        {% set followersCount = row.followersCount %}
-                        <li>
-                            <p><strong><a href="{{ path('app_usuario_perfil', {id: usuario.id}) }}">{{ usuario.nombre }}</a></strong></p>
-                            <p>👥 Seguidores: {{ followersCount }}</p>
-                        </li>
-                    {% endfor %}
-                </ol>
-            {% else %}
-                <p>No hay usuarios seguidos todavía.</p>
-            {% endif %}
-        </div>
-    </div>
+		<div style="flex: 1;">
+			<h2>Top Usuarios</h2>
+			{% if usuarios|length > 0 %}
+				<ol>
+					{% for row in usuarios %}
+						{% set usuario = row[0] %}
+						{% set followersCount = row.followersCount %}
+						<li>
+							<p>
+								<strong>
+									<a href="{{ path('app_usuario_perfil', {id: usuario.id}) }}">{{ usuario.nombre }}</a>
+								</strong>
+							</p>
+							<p>👥 Seguidores:
+								{{ followersCount }}</p>
+						</li>
+					{% endfor %}
+				</ol>
+			{% else %}
+				<p>No hay usuarios seguidos todavía.</p>
+			{% endif %}
+		</div>
+	</div>
 {% endblock %}
