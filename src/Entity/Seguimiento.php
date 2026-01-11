@@ -51,7 +51,7 @@ class Seguimiento
         return $this;
     }
 
-    public function getFechaSeguimiento(): \DateTimeInterface
+    public function getFechaSeguimiento(): ?\DateTimeInterface
     {
         return $this->fechaSeguimiento;
     }
