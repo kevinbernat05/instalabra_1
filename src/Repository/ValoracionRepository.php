@@ -40,4 +40,26 @@ class ValoracionRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    /**
+     * @return array Returns an array of [0 => Palabra, 'likesCount' => int]
+     */
+    public function findTopWordsByLikes(\DateTimeInterface $startDate = null): array
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->select('p as palabra', 'COUNT(v.id) as likesCount')
+            ->join('v.palabra', 'p')
+            ->where('v.likeActiva = :active')
+            ->setParameter('active', true)
+            ->groupBy('p.id')
+            ->orderBy('likesCount', 'DESC');
+
+        if ($startDate) {
+            $qb->andWhere('v.fechaCreacion >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        return $qb->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
 }

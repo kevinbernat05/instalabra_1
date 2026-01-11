@@ -9,20 +9,75 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ComentarioRepository::class)]
 class Comentario
 {
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type:"integer")]
-    private int $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type:"integer")]
+    private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity:Usuario::class, inversedBy:"comentarios")]
-    #[ORM\JoinColumn(nullable:false)]
-    private Usuario $usuario;
+    #[ORM\ManyToOne(targetEntity: Palabra::class, inversedBy: "comentarios")]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Palabra $palabra = null;
 
-    #[ORM\ManyToOne(targetEntity:Palabra::class, inversedBy:"comentarios")]
-    #[ORM\JoinColumn(nullable:false)]
-    private Palabra $palabra;
+    #[ORM\ManyToOne(targetEntity: Usuario::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Usuario $usuario = null;
 
     #[ORM\Column(type:"text")]
-    private string $texto;
+    private ?string $texto = null;
 
     #[ORM\Column(type:"datetime")]
-    private \DateTimeInterface $fechaCreacion;
+    private ?\DateTimeInterface $fechaCreacion = null;
+
+    public function __construct()
+    {
+        $this->fechaCreacion = new \DateTime();
+    }
+
+    // getter y setter de usuario
+    public function getUsuario(): ?Usuario
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?Usuario $usuario): self
+    {
+        $this->usuario = $usuario;
+        return $this;
+    }
+
+    // getter y setter de palabra
+    public function getPalabra(): ?Palabra
+    {
+        return $this->palabra;
+    }
+
+    public function setPalabra(?Palabra $palabra): self
+    {
+        $this->palabra = $palabra;
+        return $this;
+    }
+
+    // getter y setter de texto
+    public function getTexto(): ?string
+    {
+        return $this->texto;
+    }
+
+    public function setTexto(string $texto): self
+    {
+        $this->texto = $texto;
+        return $this;
+    }
+
+    // getter y setter de fecha
+    public function getFechaCreacion(): ?\DateTimeInterface
+    {
+        return $this->fechaCreacion;
+    }
+
+    public function setFechaCreacion(\DateTimeInterface $fechaCreacion): self
+    {
+        $this->fechaCreacion = $fechaCreacion;
+        return $this;
+    }
 }

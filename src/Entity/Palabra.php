@@ -21,6 +21,7 @@ class Palabra
     private Usuario $usuario;
 
     #[ORM\OneToMany(mappedBy:"palabra", targetEntity:Comentario::class)]
+    #[ORM\OrderBy(["fechaCreacion" => "DESC"])]
     private Collection $comentarios;
 
     #[ORM\OneToMany(mappedBy:"palabra", targetEntity:Valoracion::class)]
