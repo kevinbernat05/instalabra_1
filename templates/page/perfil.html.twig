@@ -38,9 +38,30 @@
             {% if palabras|length > 0 %}
                 {% for palabra in palabras %}
                     <div class="palabra">
-                        <p>{{ palabra.texto }}</p>
+                        {# Nombre de la palabra como link a su página #}
+                        <p>
+                            <a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
+                                {{ palabra.texto }}
+                            </a>
+                        </p>
                         <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
-                        <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
+
+                        {% if app.user %}
+                            {# Botón de Like #}
+                            <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+                                {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
+                                <button type="submit">
+                                    {% if liked %}💖 Ya te gusta{% else %}👍 Like{% endif %}
+                                </button>
+                            </form>
+
+                            {# Botón de Comentarios (lleva a la página de la palabra) #}
+                            <button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
+                                💬 Comentarios ({{ palabra.comentarios|length }})
+                            </button>
+                        {% else %}
+                            <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
