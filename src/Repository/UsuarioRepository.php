@@ -15,6 +15,26 @@ class UsuarioRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Usuario::class);
     }
+    /**
+     * @return array [0 => Usuario, 'followersCount' => int]
+     */
+    public function findTopUsersByFollowers(int $limit = 10, \DateTimeInterface $startDate = null): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->leftJoin('u.seguimientosQueRecibe', 's')
+            ->addSelect('COUNT(s.id) AS followersCount')
+            ->groupBy('u.id')
+            ->orderBy('followersCount', 'DESC');
+
+        if ($startDate) {
+            $qb->andWhere('s.fechaSeguimiento >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        return $qb->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 
     //    /**
     //     * @return Usuario[] Returns an array of Usuario objects

@@ -22,6 +22,20 @@
             <h2>Foto de perfil</h2>
             <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}"
                  alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
+        <h2>Mis palabras publicadas</h2>
+        
+        <div style="margin-bottom: 20px;">
+             {# Note: Since this controller method only passes 'usuario', I cannot access followersCount usually unless passed. 
+                Wait, I need to update the Perfil Controller Action to pass these counts too or simpler: lazy load them via entity methods if I added them?
+                No, I put the count methods in Repository.
+                So I should update PageController::perfil to pass these counts OR 
+                Update template to just use `usuario.seguimientosQueRecibe|length` which is easier!
+             #}
+             <p>
+                <strong>Seguidores:</strong> {{ usuario.seguimientosQueRecibe|length }} | 
+                <strong>Seguidos:</strong> {{ usuario.seguimientosQueHace|length }}
+             </p>
+        </div>
 
             {% if app.user and app.user.id == usuario.id %}
                 <a href="{{ path('perfil_editar') }}">

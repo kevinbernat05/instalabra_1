@@ -22,15 +22,31 @@ class PalabraRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function findTopByLikes(int $limit = 10): array
+    public function findTopByLikes(int $limit = 10, \DateTimeInterface $startDate = null): array
     {
-        return $this->createQueryBuilder('p')
-            ->leftJoin('p.valoraciones', 'v')             // unir con valoraciones
-            ->addSelect('COUNT(v.id) AS likesCount')     // contar valoraciones
-            ->andWhere('v.likeActiva = true OR v.id IS NULL') // solo likes activos
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.valoraciones', 'v')
+            ->addSelect('COUNT(v.id) AS likesCount')
+            ->andWhere('v.likeActiva = true OR v.id IS NULL')
             ->groupBy('p.id')
-            ->orderBy('likesCount', 'DESC')              // de mayor a menor
-            ->setMaxResults($limit)                      // limitar resultados
+            ->orderBy('likesCount', 'DESC');
+
+        if ($startDate) {
+            // WARNING: if I filter Valoration by date here, existing Palabras with NO likes after that date might disappear or have 0 likes.
+            // If I use leftJoin, Palabras with NULL v.id count as 0.
+            // If I put condition in WHERE, it acts like Inner Join.
+            // I should put the date condition in the ON clause or use AND WHERE v.fecha >= ...
+            // But if I use v.fecha >= ... and a palabra has no likes in that period, it will exclude the palabra entirely if I am not careful with LEFT JOIN + WHERE.
+            // However, for "Top Words", we generally only want words that HAVE likes in that period?
+            // Or at least, we count likes in that period.
+
+            // If I use `andWhere('v.fechaCreacion >= :start')`, then Palabras with ZERO likes in that period will be excluded because `v` would be null (if no likes ever) or filtered out.
+            // That is acceptable for "Top Words by Likes". We don't need to show words with 0 likes.
+            $qb->andWhere('v.fechaCreacion >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        return $qb->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
