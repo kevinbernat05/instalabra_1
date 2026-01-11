@@ -4,25 +4,6 @@
     <meta charset="UTF-8">
     <title>Perfil de {{ usuario.nombre }}</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <style>
-        body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
-        header { background: #4a90e2; color: #fff; padding: 15px 30px; }
-        header h1 { margin: 0; font-size: 1.8em; }
-        nav ul { list-style: none; padding: 0; display: flex; gap: 15px; margin-top: 5px; }
-        nav a { color: #fff; text-decoration: none; font-weight: bold; }
-        main { max-width: 800px; margin: 30px auto; padding: 0 15px; }
-        section { background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        .foto-perfil img { border-radius: 50%; border: 3px solid #4a90e2; }
-        .foto-perfil h2 { margin-top: 0; }
-        .palabra { padding: 10px 0; border-bottom: 1px solid #eee; }
-        .palabra:last-child { border-bottom: none; }
-        .palabra-link { text-decoration: none; font-weight: bold; color: #333; }
-        .palabra-link:hover { color: #4a90e2; }
-        button { background: #4a90e2; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 5px; }
-        button:hover { background: #357ab7; }
-        form { display: inline; }
-        small { color: #777; }
-    </style>
 </head>
 <body>
     <header>
@@ -37,48 +18,64 @@
     </header>
 
     <main>
-        <section class="foto-perfil" style="text-align:center;">
+        <section class="foto-perfil">
             <h2>Foto de perfil</h2>
             <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}"
-                 alt="Foto de {{ usuario.nombre }}" width="150" height="150">
-            
-            {% if app.user and app.user.id == usuario.id %}
-                <div style="margin-top: 10px;">
-                    <a href="{{ path('perfil_editar') }}"><button>Editar foto de perfil</button></a>
-                </div>
-            {% endif %}
-
-            <div style="margin-top: 15px; font-size: 0.9em; color:#555;">
-                <strong>Seguidores:</strong> {{ usuario.seguimientosQueRecibe|length }} |
+                 alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
+        <h2>Mis palabras publicadas</h2>
+        
+        <div style="margin-bottom: 20px;">
+             {# Note: Since this controller method only passes 'usuario', I cannot access followersCount usually unless passed. 
+                Wait, I need to update the Perfil Controller Action to pass these counts too or simpler: lazy load them via entity methods if I added them?
+                No, I put the count methods in Repository.
+                So I should update PageController::perfil to pass these counts OR 
+                Update template to just use `usuario.seguimientosQueRecibe|length` which is easier!
+             #}
+             <p>
+                <strong>Seguidores:</strong> {{ usuario.seguimientosQueRecibe|length }} | 
                 <strong>Seguidos:</strong> {{ usuario.seguimientosQueHace|length }}
-            </div>
+             </p>
+        </div>
+
+            {% if app.user and app.user.id == usuario.id %}
+                <a href="{{ path('perfil_editar') }}">
+                    <button>Editar foto de perfil</button>
+                </a>
+            {% endif %}
         </section>
 
-        <section class="palabras">
-            <h2>Mis palabras publicadas</h2>
+        <hr>
+
+    <section class="palabras">
+        <h2>Mis palabras publicadas</h2>
 
             {% if palabras|length > 0 %}
                 {% for palabra in palabras %}
                     <div class="palabra">
+                        {# Nombre de la palabra como link a su página #}
                         <p>
                             <a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
                                 {{ palabra.texto }}
                             </a>
                         </p>
                         <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
-                        <div style="margin-top: 5px;">
-                            {% if app.user %}
-                                <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
-                                    {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
-                                    <button type="submit">{% if liked %}💖 Ya te gusta{% else %}👍 Like{% endif %}</button>
-                                </form>
-                                <button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
-                                    💬 Comentarios ({{ palabra.comentarios|length }})
+
+                        {% if app.user %}
+                            {# Botón de Like #}
+                            <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+                                {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
+                                <button type="submit">
+                                    {% if liked %}💖 Ya te gusta{% else %}👍 Like{% endif %}
                                 </button>
-                            {% else %}
-                                <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
-                            {% endif %}
-                        </div>
+                            </form>
+
+                            {# Botón de Comentarios (lleva a la página de la palabra) #}
+                            <button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
+                                💬 Comentarios ({{ palabra.comentarios|length }})
+                            </button>
+                        {% else %}
+                            <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
@@ -87,7 +84,7 @@
         </section>
     </main>
 
-    <footer style="text-align:center; padding:15px; background:#eee; margin-top:30px;">
+    <footer>
         <p>&copy; 2025 Instalabra</p>
     </footer>
 </body>

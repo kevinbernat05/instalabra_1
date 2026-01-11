@@ -11,8 +11,13 @@ class Comentario
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type:"integer")]
+    #[ORM\Column(type: "integer")]
     private ?int $id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     #[ORM\ManyToOne(targetEntity: Palabra::class, inversedBy: "comentarios")]
     #[ORM\JoinColumn(nullable: false)]
@@ -22,10 +27,10 @@ class Comentario
     #[ORM\JoinColumn(nullable: false)]
     private ?Usuario $usuario = null;
 
-    #[ORM\Column(type:"text")]
+    #[ORM\Column(type: "text")]
     private ?string $texto = null;
 
-    #[ORM\Column(type:"datetime")]
+    #[ORM\Column(type: "datetime")]
     private ?\DateTimeInterface $fechaCreacion = null;
 
     public function __construct()

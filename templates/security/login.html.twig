@@ -1,9 +1,15 @@
-<h1>Login</h1>
+{% extends 'base.html.twig' %}
 
-<form action="{{ path('app_login') }}" method="post">
-    <label>Email:</label>
-    <input type="email" name="_username" required>
-    <label>Contraseña:</label>
-    <input type="password" name="_password" required>
-    <button type="submit">Entrar</button>
-</form>
+{% block title %}Login{% endblock %}
+
+{% block body %}
+    <h1>Login</h1>
+
+    <form action="{{ path('app_login') }}" method="post">
+        <label>Email:</label>
+        <input type="email" name="_username" required>
+        <label>Contraseña:</label>
+        <input type="password" name="_password" required>
+        <button type="submit">Entrar</button>
+    </form>
+{% endblock %}
