@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use App\Entity\Comentario;
+use App\Form\ComentarioType;
+
 
 final class PageController extends AbstractController
 {
@@ -53,7 +57,7 @@ final class PageController extends AbstractController
 
     // ----------------- Toggle Like / Quitar Like -----------------
     #[Route('/palabra/like/{id}', name: 'palabra_like_toggle')]
-    public function toggleLike(
+    public function toggleLike(Request $request,
         Palabra $palabra, 
         EntityManagerInterface $entityManager
     ): RedirectResponse
@@ -83,7 +87,7 @@ final class PageController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_home');
+        return $this->redirect($request->headers->get('referer'));
     } 
     
     #[Route('/perfil', name: 'app_perfil')]
@@ -115,4 +119,36 @@ final class PageController extends AbstractController
             'palabras' => $palabras,
         ]);
     }
+
+   #[Route('/palabra/{id}/comentar', name: 'palabra_comentar', methods: ['POST'])]
+    public function comentar(Palabra $palabra, Request $request, EntityManagerInterface $entityManager): RedirectResponse
+    {
+        $usuario = $this->getUser();
+        if (!$usuario) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $texto = $request->request->get('comentario_texto'); // input name="comentario_texto"
+        if ($texto) {
+            $comentario = new Comentario();
+            $comentario->setUsuario($usuario);
+            $comentario->setPalabra($palabra);
+            $comentario->setTexto($texto);
+            $comentario->setFechaCreacion(new \DateTime());
+
+            $entityManager->persist($comentario);
+            $entityManager->flush();
+        }
+
+        return $this->redirect($request->headers->get('referer'));
+    }
+
+    #[Route('/palabra/{id}', name: 'palabra_show')]
+    public function show(Palabra $palabra): Response
+    {
+        return $this->render('page/palabra.html.twig', [
+            'palabra' => $palabra,
+        ]);
+    }
+
 }
