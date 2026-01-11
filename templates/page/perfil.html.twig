@@ -1,91 +1,64 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Perfil de {{ usuario.nombre }}</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Perfil de {{ usuario.nombre }}</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ path('app_home') }}">Inicio</a></li>
-                <li><a href="{{ path('app_logout') }}">Cerrar sesión</a></li>
-                <li><a href="{{ path('perfil_editar') }}">Editar perfil</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends 'base.html.twig' %}
 
-    <main>
-        <section class="foto-perfil">
-            <h2>Foto de perfil</h2>
-            <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}"
-                 alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
+{% block title %}Perfil de {{ usuario.nombre }}{% endblock %}
+
+{% block body %}
+    <section class="foto-perfil">
+        <h2>Foto de perfil</h2>
+        <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}"
+                alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
+    <h2>Mis palabras publicadas</h2>
+    
+    <div style="margin-bottom: 20px;">
+            <p>
+            <strong>Seguidores:</strong> {{ usuario.seguimientosQueRecibe|length }} | 
+            <strong>Seguidos:</strong> {{ usuario.seguimientosQueHace|length }}
+            </p>
+    </div>
+
+        {% if app.user and app.user.id == usuario.id %}
+            <a href="{{ path('perfil_editar') }}">
+                <button>Editar foto de perfil</button>
+            </a>
+        {% endif %}
+    </section>
+
+    <hr>
+
+    <section class="palabras">
         <h2>Mis palabras publicadas</h2>
-        
-        <div style="margin-bottom: 20px;">
-             {# Note: Since this controller method only passes 'usuario', I cannot access followersCount usually unless passed. 
-                Wait, I need to update the Perfil Controller Action to pass these counts too or simpler: lazy load them via entity methods if I added them?
-                No, I put the count methods in Repository.
-                So I should update PageController::perfil to pass these counts OR 
-                Update template to just use `usuario.seguimientosQueRecibe|length` which is easier!
-             #}
-             <p>
-                <strong>Seguidores:</strong> {{ usuario.seguimientosQueRecibe|length }} | 
-                <strong>Seguidos:</strong> {{ usuario.seguimientosQueHace|length }}
-             </p>
-        </div>
 
-            {% if app.user and app.user.id == usuario.id %}
-                <a href="{{ path('perfil_editar') }}">
-                    <button>Editar foto de perfil</button>
-                </a>
-            {% endif %}
-        </section>
+        {% if palabras|length > 0 %}
+            {% for palabra in palabras %}
+                <div class="palabra">
+                    {# Nombre de la palabra como link a su página #}
+                    <p>
+                        <a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
+                            {{ palabra.texto }}
+                        </a>
+                    </p>
+                    <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 
-        <hr>
-
-        <section class="palabras">
-            <h2>Mis palabras publicadas</h2>
-
-            {% if palabras|length > 0 %}
-                {% for palabra in palabras %}
-                    <div class="palabra">
-                        {# Nombre de la palabra como link a su página #}
-                        <p>
-                            <a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
-                                {{ palabra.texto }}
-                            </a>
-                        </p>
-                        <small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
-
-                        {% if app.user %}
-                            {# Botón de Like #}
-                            <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
-                                {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
-                                <button type="submit">
-                                    {% if liked %}💖 Ya te gusta{% else %}👍 Like{% endif %}
-                                </button>
-                            </form>
-
-                            {# Botón de Comentarios (lleva a la página de la palabra) #}
-                            <button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
-                                💬 Comentarios ({{ palabra.comentarios|length }})
+                    {% if app.user %}
+                        {# Botón de Like #}
+                        <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+                            {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
+                            <button type="submit">
+                                {% if liked %}💖 Ya te gusta{% else %}👍 Like{% endif %}
                             </button>
-                        {% else %}
-                            <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>Aún no has publicado ninguna palabra.</p>
-            {% endif %}
-        </section>
-    </main>
+                        </form>
 
-    <footer>
-        <p>&copy; 2025 Instalabra</p>
-    </footer>
-</body>
-</html>
+                        {# Botón de Comentarios (lleva a la página de la palabra) #}
+                        <button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
+                            💬 Comentarios ({{ palabra.comentarios|length }})
+                        </button>
+                    {% else %}
+                        <p>👍 Likes: {{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aún no has publicado ninguna palabra.</p>
+        {% endif %}
+    </section>
+{% endblock %}

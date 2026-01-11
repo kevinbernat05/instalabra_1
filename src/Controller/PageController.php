@@ -22,8 +22,18 @@ use App\Repository\UsuarioRepository;
 use App\Repository\ValoracionRepository;
 
 
+
+use App\Service\TimeService;
+
 final class PageController extends AbstractController
 {
+    private TimeService $timeService;
+
+    public function __construct(TimeService $timeService)
+    {
+        $this->timeService = $timeService;
+    }
+
     // ----------------- Página principal: mostrar y publicar palabras -----------------
     #[Route('/', name: 'app_home')]
     public function index(
@@ -40,7 +50,7 @@ final class PageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Asignar usuario y fecha automáticamente
             $palabra->setUsuario($this->getUser());
-            $palabra->setFechaCreacion(new \DateTime());
+            $palabra->setFechaCreacion($this->timeService->getNow());
 
             // Guardar en DB
             $entityManager->persist($palabra);
@@ -81,12 +91,17 @@ final class PageController extends AbstractController
             $valoracion->setUsuario($usuario);
             $valoracion->setPalabra($palabra);
             $valoracion->setLikeActiva(true);
-            $valoracion->setFechaCreacion(new \DateTime());
+            $valoracion->setFechaCreacion($this->timeService->getNow());
 
             $entityManager->persist($valoracion);
         } else {
             // Ya existe → alternar like
             $valoracion->setLikeActiva(!$valoracion->isLikeActiva());
+            // Opcional: actualizar fecha si se reactiva? No, mejor mantener original o actualizar?
+            // "modificar la fecha que detecta el sistema". Si reactivo like en el pasado/futuro, 
+            // no suele cambiar la fecha de creación del like original, pero si es un toggle, 
+            // a veces se considera "nuevo like". 
+            // Mantendremos la fecha original de creación del registro Valoracion.
         }
 
         $entityManager->flush();
@@ -121,10 +136,14 @@ final class PageController extends AbstractController
         UsuarioRepository $usuarioRepository
     ): Response {
         $period = $request->query->get('period', 'daily'); // daily, weekly, monthly
+
+        $now = $this->timeService->getNow();
+        // Clone to avoid modifying $now object if it's reused, though getNow returns new instance usually.
+        // It's safer to clone.
         $startDate = match ($period) {
-            'weekly' => new \DateTime('-1 week'),
-            'monthly' => new \DateTime('-1 month'),
-            default => new \DateTime('-1 day'),
+            'weekly' => (clone $now)->modify('-1 week'),
+            'monthly' => (clone $now)->modify('-1 month'),
+            default => (clone $now)->modify('-1 day'),
         };
 
         $topPalabras = $palabraRepository->findTopByLikes(10, $startDate);
@@ -133,7 +152,8 @@ final class PageController extends AbstractController
         return $this->render('page/ranking.html.twig', [
             'palabras' => $topPalabras,
             'usuarios' => $topUsuarios,
-            'period' => $period
+            'period' => $period,
+            'debugDate' => $now // Pass current simulated date for UI context if needed
         ]);
     }
 
@@ -301,6 +321,57 @@ final class PageController extends AbstractController
 
             $entityManager->persist($comentario);
             $entityManager->flush();
+        }
+
+        return $this->redirect($request->headers->get('referer'));
+    }
+
+    #[Route('/palabra/{id}/delete', name: 'palabra_delete', methods: ['POST'])]
+    public function deletePalabra(
+        Request $request,
+        Palabra $palabra,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse {
+        $usuario = $this->getUser();
+
+        // Verificar que el usuario sea el dueño de la palabra
+        if (!$usuario || $usuario !== $palabra->getUsuario()) {
+            throw $this->createAccessDeniedException('No tienes permiso para eliminar esta publicación.');
+        }
+
+        // Token CSRF opcional pero recomendado. Por simplicidad en esta iteración y rapidez,
+        // confío en que el botón delete será un form con POST.
+        // Si se desea CSRF explícito: if ($this->isCsrfTokenValid('delete'.$palabra->getId(), $request->request->get('_token')))
+        if ($this->isCsrfTokenValid('delete' . $palabra->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($palabra);
+            $entityManager->flush();
+            $this->addFlash('success', 'Publicación eliminada correctamente.');
+        } else {
+            $this->addFlash('error', 'Token inválido, no se pudo eliminar.');
+        }
+
+        // Redirigir a la home o perfil
+        return $this->redirectToRoute('app_home');
+    }
+
+    #[Route('/comentario/{id}/delete', name: 'comentario_delete', methods: ['POST'])]
+    public function deleteComentario(
+        Request $request,
+        Comentario $comentario,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse {
+        $usuario = $this->getUser();
+
+        if (!$usuario || $usuario !== $comentario->getUsuario()) {
+            throw $this->createAccessDeniedException('No tienes permiso para eliminar este comentario.');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $comentario->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($comentario);
+            $entityManager->flush();
+            $this->addFlash('success', 'Comentario eliminado.');
+        } else {
+            $this->addFlash('error', 'Token inválido.');
         }
 
         return $this->redirect($request->headers->get('referer'));

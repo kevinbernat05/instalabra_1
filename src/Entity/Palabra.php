@@ -10,68 +10,78 @@ use Doctrine\Common\Collections\ArrayCollection;
 #[ORM\Entity(repositoryClass: PalabraRepository::class)]
 class Palabra
 {
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type:"integer")]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\Column(type:"text")]
+    #[ORM\Column(type: "text")]
     private string $texto;
 
-    #[ORM\ManyToOne(targetEntity:Usuario::class, inversedBy:"palabras")]
-    #[ORM\JoinColumn(nullable:false)]
+    #[ORM\ManyToOne(targetEntity: Usuario::class, inversedBy: "palabras")]
+    #[ORM\JoinColumn(nullable: false)]
     private Usuario $usuario;
 
-    #[ORM\OneToMany(mappedBy:"palabra", targetEntity:Comentario::class)]
+    #[ORM\OneToMany(mappedBy: "palabra", targetEntity: Comentario::class, cascade: ["remove"], orphanRemoval: true)]
     #[ORM\OrderBy(["fechaCreacion" => "DESC"])]
     private Collection $comentarios;
 
-    #[ORM\OneToMany(mappedBy:"palabra", targetEntity:Valoracion::class)]
+    #[ORM\OneToMany(mappedBy: "palabra", targetEntity: Valoracion::class, cascade: ["remove"], orphanRemoval: true)]
     private Collection $valoraciones;
 
-    #[ORM\Column(type:"datetime")]
+    #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $fechaCreacion;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->comentarios = new ArrayCollection();
         $this->valoraciones = new ArrayCollection();
     }
 
     // ------------------- GETTERS & SETTERS -------------------
 
-    public function getId(): ?int {
+    public function getId(): ?int
+    {
         return $this->id;
     }
 
-    public function getTexto(): ?string {
+    public function getTexto(): ?string
+    {
         return $this->texto;
     }
 
-    public function setTexto(string $texto): self {
+    public function setTexto(string $texto): self
+    {
         $this->texto = $texto;
         return $this;
     }
 
-    public function getUsuario(): Usuario {
+    public function getUsuario(): Usuario
+    {
         return $this->usuario;
     }
 
-    public function setUsuario(Usuario $usuario): self {
+    public function setUsuario(Usuario $usuario): self
+    {
         $this->usuario = $usuario;
         return $this;
     }
 
-    public function getComentarios(): Collection {
+    public function getComentarios(): Collection
+    {
         return $this->comentarios;
     }
 
-    public function getValoraciones(): Collection {
+    public function getValoraciones(): Collection
+    {
         return $this->valoraciones;
     }
 
-    public function getFechaCreacion(): \DateTimeInterface {
+    public function getFechaCreacion(): \DateTimeInterface
+    {
         return $this->fechaCreacion;
     }
 
-    public function setFechaCreacion(\DateTimeInterface $fechaCreacion): self {
+    public function setFechaCreacion(\DateTimeInterface $fechaCreacion): self
+    {
         $this->fechaCreacion = $fechaCreacion;
         return $this;
     }

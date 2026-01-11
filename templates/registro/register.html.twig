@@ -1,8 +1,14 @@
-<h1>Registro</h1>
+{% extends 'base.html.twig' %}
 
-{{ form_start(form) }}
-    {{ form_row(form.nombre) }}
-    {{ form_row(form.email) }}
-    {{ form_row(form.password) }}
-    <button type="submit">Registrarse</button>
-{{ form_end(form) }}
+{% block title %}Registro{% endblock %}
+
+{% block body %}
+    <h1>Registro</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.nombre) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.password) }}
+        <button type="submit">Registrarse</button>
+    {{ form_end(form) }}
+{% endblock %}
