@@ -34,7 +34,7 @@
 				<div class="user_info">
 					<img src="{{ palabra.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ palabra.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ palabra.usuario.nombre }}">
 					<span>
-						<a href="{{ path('palabra_show', {id: palabra.usuario.id}) }}" style="color: inherit; text-decoration: none;">
+						<a href="{{ path('app_usuario_perfil', {id: palabra.usuario.id}) }}" style="color: inherit; text-decoration: none;">
 							{{ palabra.usuario.nombre }}
 						</a>
 					</span>
