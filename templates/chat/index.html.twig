@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mensajes
+{% endblock %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-md-8 offset-md-2">
+			<h1>Mensajes</h1>
+
+			<div class="list-group mt-4">
+				{% for conversation in conversations %}
+					{% set contact = conversation.user %}
+					{% set lastMsg = conversation.lastMessage %}
+
+					<a href="{{ path('app_chat_show', {id: contact.id}) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+						<div>
+							<h5 class="mb-1">{{ contact.nombre }}</h5>
+							<!-- Assuming nombre exists on Usuario -->
+							<small class="text-muted">
+								{% if lastMsg.remitente == app.user %}
+									Tú:
+								{% endif %}
+								{% if lastMsg.palabraCompartida %}
+									[Publicación compartida]
+								{% else %}
+									{{ lastMsg.contenido|slice(0, 50) }}
+								{% endif %}
+							</small>
+						</div>
+						<small class="text-muted">{{ lastMsg.fechaEnvio|date('d/m/Y H:i') }}</small>
+					</a>
+				{% else %}
+					<div class="text-center p-5">
+						<p class="text-muted">No tienes mensajes aún.</p>
+						<p>¡Visita el perfil de alguien para enviar un mensaje!</p>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

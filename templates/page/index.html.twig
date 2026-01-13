@@ -76,11 +76,11 @@
 					<span class="count">{{ palabra.comentarios|length }}</span>
 				</div>
 
-				<!-- SHARE (Visual ONLY) -->
-				<div class="action" style="cursor: default;">
+				<!-- SHARE -->
+				<a href="{{ path('app_chat_share', {id: palabra.id}) }}" class="action" style="text-decoration:none; color:inherit;">
 					<img src="{{ asset('multimedia/share.png') }}" alt="Compartir">
 					<span class="count">0</span>
-				</div>
+				</a>
 
 				<!-- DELETE -->
 				{% if app.user and app.user == palabra.usuario %}

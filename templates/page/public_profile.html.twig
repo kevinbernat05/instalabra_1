@@ -20,7 +20,7 @@
 		</div>
 
 		{% if app.user and app.user != usuario %}
-			<div style="margin-top: 10px;">
+			<div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
 				{% if isFollowing %}
 					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}">
 						<button>Dejar de seguir</button>
@@ -30,6 +30,10 @@
 						<button>Seguir</button>
 					</a>
 				{% endif %}
+
+				<a href="{{ path('app_chat_show', {id: usuario.id}) }}" style="text-decoration:none;">
+					<button style="background-color: #f0f0f0; color: #333; border: 1px solid #ccc;">Enviar mensaje</button>
+				</a>
 			</div>
 		{% endif %}
 	</section>
