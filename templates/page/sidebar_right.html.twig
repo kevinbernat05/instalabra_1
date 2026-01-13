@@ -1,7 +1,11 @@
 <div class="menu-bar-right">
 	<div class="search-box">
-		<input type="text" placeholder="Buscar">
+		<form action="{{ path('app_search') }}" method="GET" class="search-form">
+            <input type="text" name="q" placeholder="Buscar">
+        </form>
 	</div>
+
+	
 
 	<!-- Ranking diario de las palabras mas valoradas del dia -->
 	<div class="rank-diary box">

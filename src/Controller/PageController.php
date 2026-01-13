@@ -442,4 +442,32 @@ final class PageController extends AbstractController
             'palabra' => $palabra,
         ]);
     }
+
+    #[Route('/buscar', name: 'app_search')]
+    public function search(Request $request, EntityManagerInterface $em): Response
+    {
+        $query = $request->query->get('q');
+        $currentFilter = $request->query->get('filter') ?? 'usuarios'; // <-- por defecto Usuarios
+
+        $palabras = $query ? $em->getRepository(Palabra::class)
+            ->createQueryBuilder('p')
+            ->where('p.palabra LIKE :q OR p.definicion LIKE :q')
+            ->setParameter('q', '%'.$query.'%')
+            ->getQuery()
+            ->getResult() : [];
+
+        $usuarios = $query ? $em->getRepository(Usuario::class)
+            ->createQueryBuilder('u')
+            ->where('u.nombre LIKE :q')
+            ->setParameter('q', '%'.$query.'%')
+            ->getQuery()
+            ->getResult() : [];
+
+        return $this->render('page/results.html.twig', [
+            'palabras' => $palabras,
+            'usuarios' => $usuarios,
+            'query' => $query,
+            'currentFilter' => $currentFilter,
+        ]);
+    }
 }
