@@ -78,16 +78,28 @@ final class PageController extends AbstractController
                 ['fechaCreacion' => 'DESC']
             );
         } else {
-            // For You = Todos
             $palabras = $palabraRepository->findBy([], ['fechaCreacion' => 'DESC']);
         }
+
+        // --- Ranking Logic for Index ---
+        $now = $this->timeService->getNow();
+        $startDate = (clone $now)->modify('-1 day');
+        $topPalabras = $palabraRepository->findTopByLikes(5, $startDate);
+        $maxLikes = 1;
+        if (!empty($topPalabras)) {
+            $maxLikes = $topPalabras[0]['likesCount'];
+            if ($maxLikes == 0) $maxLikes = 1;
+        }
+        // -------------------------------
 
         return $this->render('page/index.html.twig', [
             'form' => $form->createView(),
             'palabras' => $palabras,
-            'currentFilter' => $filter
+            'currentFilter' => $filter,
+            'topWords' => $topPalabras,
+            'maxLikes' => $maxLikes
         ]);
-    }
+        }
 
     // ----------------- Toggle Like / Quitar Like -----------------
     #[Route('/palabra/like/{id}', name: 'palabra_like_toggle')]
@@ -428,8 +440,8 @@ final class PageController extends AbstractController
         }
 
         return $this->render('page/sidebar_right.html.twig', [
-            'topWords' => $topPalabras,
-            'maxLikes' => $maxLikes,
+            // 'topWords' => $topPalabras, // Movido al index
+            // 'maxLikes' => $maxLikes,    // Movido al index
             'suggestedUsers' => $suggestedUsers,
             'followingIds' => $followingIds
         ]);
