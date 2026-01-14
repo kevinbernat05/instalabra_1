@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat con
+	{{ otherUser.nombre }}
+{% endblock %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-md-8 offset-md-2">
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<h3>
+					<a href="{{ path('app_usuario_perfil', {id: otherUser.id}) }}" class="text-decoration-none text-dark">{{ otherUser.nombre }}</a>
+				</h3>
+				<a href="{{ path('app_chat_index') }}" class="btn btn-outline-secondary btn-sm">Volver</a>
+			</div>
+
+			<div class="card mb-3">
+				<div class="card-body" style="height: 400px; overflow-y: auto; display: flex; flex-direction: column;">
+					{% for message in messages %}
+						{% set isMe = message.remitente == app.user %}
+						<div class="d-flex {% if isMe %}justify-content-end{% else %}justify-content-start{% endif %} mb-2">
+							<div class="card {% if isMe %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 75%;">
+								<div class="card-body p-2">
+									{% if message.palabraCompartida %}
+										{% set sharedPost = message.palabraCompartida %}
+										<div class="card mb-2 text-dark" style="font-size: 0.9em; overflow: hidden; border-radius: 12px; border: 1px solid #eee;">
+											<a href="{{ path('palabra_show', {id: sharedPost.id}) }}" class="text-decoration-none text-dark">
+												<div class="card-header bg-light p-2 d-flex align-items-center" style="border-bottom: 1px solid #eee;">
+													<img src="{{ sharedPost.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ sharedPost.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ sharedPost.usuario.nombre }}" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 8px; object-fit: cover;">
+													<strong>{{ sharedPost.usuario.nombre }}</strong>
+												</div>
+												<div class="card-body p-2">
+													<p class="mb-1" style="font-weight: 500;">{{ sharedPost.palabra }}</p>
+													<p class="mb-0 text-muted small text-truncate" style="max-width: 200px;">{{ sharedPost.definicion }}</p>
+												</div>
+											</a>
+										</div>
+									{% endif %}
+
+									{% if message.contenido %}
+										<p class="mb-0">{{ message.contenido }}</p>
+									{% endif %}
+									<small class="{% if isMe %}text-white-50{% else %}text-muted{% endif %}" style="font-size: 0.7em;">
+										{{ message.fechaEnvio|date('H:i') }}
+									</small>
+								</div>
+							</div>
+						</div>
+					{% else %}
+						<p class="text-center text-muted mt-5">Di hola a
+							{{ otherUser.nombre }}
+							👋</p>
+					{% endfor %}
+				</div>
+				<div class="card-footer">
+					<form action="{{ path('app_chat_send', {id: otherUser.id}) }}" method="post" class="d-flex">
+						<input type="text" name="content" class="form-control me-2" placeholder="Escribe un mensaje..." required autofocus>
+						<button type="submit" class="btn btn-primary">Enviar</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Scroll to bottom
+const chatContainer = document.querySelector('.card-body[style*="overflow-y"]');
+if (chatContainer) {
+chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+	</script>
+{% endblock %}

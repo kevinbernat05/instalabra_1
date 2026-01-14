@@ -1,28 +1,29 @@
 <?php
 
 namespace App\Entity;
+
 use App\Repository\SeguimientoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: SeguimientoRepository::class)]
 #[ORM\Table(uniqueConstraints: [
     new ORM\UniqueConstraint(name: "seguidor_seguido_unique", columns: ["seguidor_id", "seguido_id"])
 ])]
 class Seguimiento
 {
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
-    private int $id;
+    private $id;
 
     #[ORM\ManyToOne(targetEntity: Usuario::class, inversedBy: "seguimientosQueHace")]
     #[ORM\JoinColumn(nullable: false)]
-    private Usuario $seguidor;
+    private $seguidor;
 
     #[ORM\ManyToOne(targetEntity: Usuario::class, inversedBy: "seguimientosQueRecibe")]
     #[ORM\JoinColumn(nullable: false)]
-    private Usuario $seguido;
+    private $seguido;
 
     #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $fechaSeguimiento;
+    private $fechaSeguimiento;
 
     public function getId(): ?int
     {
@@ -37,6 +38,7 @@ class Seguimiento
     public function setSeguidor(?Usuario $seguidor): self
     {
         $this->seguidor = $seguidor;
+
         return $this;
     }
 
@@ -48,6 +50,7 @@ class Seguimiento
     public function setSeguido(?Usuario $seguido): self
     {
         $this->seguido = $seguido;
+
         return $this;
     }
 
@@ -59,6 +62,7 @@ class Seguimiento
     public function setFechaSeguimiento(\DateTimeInterface $fechaSeguimiento): self
     {
         $this->fechaSeguimiento = $fechaSeguimiento;
+
         return $this;
     }
 }

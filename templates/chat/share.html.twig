@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Compartir Publicación
+{% endblock %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-md-6 offset-md-3">
+			<h3>Compartir publicación</h3>
+
+			<!-- Preview -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<strong>{{ palabra.usuario.nombre }}</strong>
+					wrote:
+					<h5>{{ palabra.palabra }}</h5>
+					<p>{{ palabra.definicion }}</p>
+				</div>
+			</div>
+
+			<h4>Enviar a:</h4>
+			<div class="list-group">
+				{% for user in users %}
+					<div class="list-group-item d-flex justify-content-between align-items-center">
+						<span>{{ user.nombre }}</span>
+						<form action="{{ path('app_chat_send', {id: user.id}) }}" method="post">
+							<input type="hidden" name="shared_post_id" value="{{ palabra.id }}">
+							<input
+							type="hidden" name="content" value="">
+							<!-- Optional message? -->
+							<button type="submit" class="btn btn-primary btn-sm">Enviar</button>
+						</form>
+					</div>
+				{% else %}
+					<p>No sigues a nadie para compartir.</p>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
