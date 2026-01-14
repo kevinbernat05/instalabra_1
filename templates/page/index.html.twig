@@ -4,6 +4,9 @@
 {% endblock %}
 
 {% block body %}
+	<!-- Difuminacion del fondo al darle click a publicar -->
+	<div id="blur" class="blur"></div>
+	
 	<!-- Botones para ti y siguiendo -->
 	<div class="feed-buttons">
 		<a href="{{ path('app_home', {'filter': 'foryou'}) }}" style="text-decoration:none; color:inherit; flex:1;">
@@ -150,10 +153,16 @@
 				{% endif %}
 			</div>
 
+
 		</section>
 	{% else %}
 		<div style="padding: 20px; text-align: center; color: #536471;">
 			<p>No hay publicaciones aún. ¡Sé el primero!</p>
 		</div>
 	{% endfor %}
+	<!-- Ventana que va a aparecer al darle click al botón -->
+	<div id="window" class="window">
+		<h2>Publicar</h2>
+		<button id="close-window">Cerrar</button>
+	</div>
 {% endblock %}
