@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mi Perfil - Instalabra
+{% endblock %}
+{% block body %}
+<div class="search-buttons" style="display:flex; gap:8px; margin-bottom:10px;">
+    <a href="{{ path('app_search', {'q': query, 'filter': 'usuarios'}) }}" style="text-decoration:none; flex:1;">
+        <button class="{{ currentFilter is not defined or currentFilter == 'usuarios' ? 'active' : '' }}" style="width:100%;">Usuarios</button>
+    </a>
+    <a href="{{ path('app_search', {'q': query, 'filter': 'palabras'}) }}" style="text-decoration:none; flex:1;">
+        <button class="{{ currentFilter == 'palabras' ? 'active' : '' }}" style="width:100%;">Palabras</button>
+    </a>
+    <a href="{{ path('app_search', {'q': query, 'filter': 'definiciones'}) }}" style="text-decoration:none; flex:1;">
+        <button class="{{ currentFilter == 'definiciones' ? 'active' : '' }}" style="width:100%;">Definiciones</button>
+    </a>
+</div>
+
+{% if currentFilter is not defined or currentFilter == 'usuarios' %}
+    <h3>Usuarios</h3>
+    <ul>
+        {% for user in usuarios %}
+            <li>{{ user.nombre }}</li>
+        {% else %}
+            <li>No se encontraron usuarios</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if currentFilter == 'palabras' %}
+    <h3>Palabras</h3>
+    <ul>
+        {% for palabra in palabras %}
+            <li>{{ palabra.palabra }}</li>
+        {% else %}
+            <li>No se encontraron palabras</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if currentFilter == 'definiciones' %}
+    <h3>Definiciones</h3>
+    <ul>
+        {% for palabra in palabras %}
+            <li>{{ palabra.definicion }}</li>
+        {% else %}
+            <li>No se encontraron definiciones</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+
+{% endblock %}
