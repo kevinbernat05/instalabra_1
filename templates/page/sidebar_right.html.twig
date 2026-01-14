@@ -5,6 +5,25 @@
         </form>
 	</div>
 
+	<!-- Ranking diario de las palabras mas valoradas del dia -->
+	<div class="rank-diary box">
+		<h3>Palabras del día</h3>
+		<ol class="word-list" id="word-list">
+			{% for palabra in topWords %}
+				<li>
+					<span class="word-name">
+						<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}" style="color:inherit; text-decoration:none;">{{ palabra.palabraEntity.palabra }}</a>
+					</span>
+					<div class="vote-bar">
+						<div class="fill" style="width: {{ (palabra.likesCount / maxLikes * 100)|round }}%;"></div>
+						<span class="vote-number">{{ palabra.likesCount }}</span>
+					</div>
+				</li>
+			{% else %}
+				<p>No hay datos hoy.</p>
+			{% endfor %}
+		</ol>
+	</div>
 
 	<!-- Sugerencias de usuarios a seguir -->
 	<div class="suggestions box">
