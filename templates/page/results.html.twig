@@ -2,15 +2,15 @@
 {% block title %}Mi Perfil - Instalabra
 {% endblock %}
 {% block body %}
-<div class="search-buttons" style="display:flex; gap:8px; margin-bottom:10px;">
-    <a href="{{ path('app_search', {'q': query, 'filter': 'usuarios'}) }}" style="text-decoration:none; flex:1;">
-        <button class="{{ currentFilter is not defined or currentFilter == 'usuarios' ? 'active' : '' }}" style="width:100%;">Usuarios</button>
+<div class="search-buttons">
+    <a href="{{ path('app_search', {'q': query, 'filter': 'usuarios'}) }}">
+        <button class="{{ currentFilter is not defined or currentFilter == 'usuarios' ? 'active' : '' }}">Usuarios</button>
     </a>
-    <a href="{{ path('app_search', {'q': query, 'filter': 'palabras'}) }}" style="text-decoration:none; flex:1;">
-        <button class="{{ currentFilter == 'palabras' ? 'active' : '' }}" style="width:100%;">Palabras</button>
+    <a href="{{ path('app_search', {'q': query, 'filter': 'palabras'}) }}">
+        <button class="{{ currentFilter == 'palabras' ? 'active' : '' }}">Palabras</button>
     </a>
-    <a href="{{ path('app_search', {'q': query, 'filter': 'definiciones'}) }}" style="text-decoration:none; flex:1;">
-        <button class="{{ currentFilter == 'definiciones' ? 'active' : '' }}" style="width:100%;">Definiciones</button>
+    <a href="{{ path('app_search', {'q': query, 'filter': 'definiciones'}) }}">
+        <button class="{{ currentFilter == 'definiciones' ? 'active' : '' }}">Definiciones</button>
     </a>
 </div>
 

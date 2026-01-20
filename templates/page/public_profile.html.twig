@@ -7,9 +7,9 @@
 {% block body %}
 	<section class="foto-perfil">
 		<h2>{{ usuario.nombre }}</h2>
-		<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
+		<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150">
 
-		<div style="margin-bottom: 20px;">
+		<div>
 			<p>
 				<strong>Seguidores:</strong>
 				{{ followersCount }}
@@ -20,7 +20,7 @@
 		</div>
 
 		{% if app.user and app.user != usuario %}
-			<div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+			<div>
 				{% if isFollowing %}
 					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}">
 						<button>Dejar de seguir</button>
@@ -31,8 +31,8 @@
 					</a>
 				{% endif %}
 
-				<a href="{{ path('app_chat_show', {id: usuario.id}) }}" style="text-decoration:none;">
-					<button style="background-color: #f0f0f0; color: #333; border: 1px solid #ccc;">Enviar mensaje</button>
+				<a href="{{ path('app_chat_show', {id: usuario.id}) }}">
+					<button>Enviar mensaje</button>
 				</a>
 			</div>
 		{% endif %}
@@ -55,7 +55,7 @@
 					<small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 
 					{% if app.user %}
-						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
 							{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
 							<button type="submit">
 								{% if liked %}💖 Ya te gusta{% else %}👍 Like

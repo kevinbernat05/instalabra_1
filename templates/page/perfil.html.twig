@@ -6,10 +6,10 @@
 	<main>
 		<section class="foto-perfil">
 			<h2>Foto de perfil</h2>
-			<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150" style="border-radius:50%;">
+			<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150">
 			<h2>Mis palabras publicadas</h2>
 
-			<div style="margin-bottom: 20px;">
+			<div>
 				<p>
 					<strong>Seguidores:</strong>
 					{{ usuario.seguimientosQueRecibe|length }}
@@ -46,7 +46,7 @@
 
 						{% if app.user %}
 							{# Botón de Like #}
-							<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+							<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
 								{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
 								<button type="submit">
 									{% if liked %}💖 Ya te gusta{% else %}👍 Like

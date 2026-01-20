@@ -12,14 +12,14 @@
 	<p>
 		Publicado por
 		<strong>{{ palabra.usuario.nombre }}</strong><br>
-		<img src="{{ palabra.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ palabra.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ palabra.usuario.nombre }}" width="30" height="30" style="border-radius:50%; vertical-align: middle;">
+		<img src="{{ palabra.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ palabra.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ palabra.usuario.nombre }}" width="30" height="30">
 		<small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 	</p>
 
 	{% if app.user and app.user == palabra.usuario %}
-		<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta publicación?');" style="display:inline;">
+		<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta publicación?');">
 			<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
-			<button type="submit" style="color:red;">Eliminar Publicación</button>
+			<button type="submit">Eliminar Publicación</button>
 		</form>
 	{% endif %}
 
@@ -55,17 +55,17 @@
 	{% endif %}
 
 	{% for comentario in palabra.comentarios %}
-		<div class="comentario" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+		<div class="comentario">
 			<p>
-				<img src="{{ comentario.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ comentario.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ comentario.usuario.nombre }}" width="20" height="20" style="border-radius:50%; vertical-align: middle; margin-right: 5px;">
+				<img src="{{ comentario.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ comentario.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ comentario.usuario.nombre }}" width="20" height="20">
 				<strong>{{ comentario.usuario.nombre }}</strong>:
 				{{ comentario.texto }}
 			</p>
 			<small>{{ comentario.fechaCreacion|date('d/m/Y H:i') }}</small>
 			{% if app.user and app.user == comentario.usuario %}
-				<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');" style="display:inline;">
+				<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');">
 					<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comentario.id) }}">
-					<button type="submit" style="color:red; font-size: small; border:none; background:none; cursor:pointer;">[x]</button>
+					<button type="submit">[x]</button>
 				</form>
 			{% endif %}
 		</div>
