@@ -53,8 +53,19 @@
 						</ul>
 					</nav>
 
-					<button class="publicar" onclick="document.querySelector('form[name=\'palabra\'] input[type=\'text\']').focus(); window.scrollTo({top:0, behavior:'smooth'});">Publicar</button>
-
+					{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+						{# Botón para usuarios logueados: hace scroll y focus #}
+						<button class="publicar" 
+								onclick="document.querySelector('form[name=\'palabra\'] input[type=\'text\']').focus(); window.scrollTo({top:0, behavior:'smooth'});">
+							Publicar
+						</button>
+					{% else %}
+						{# Enlace para usuarios NO logueados: redirige al login #}
+						<a href="{{ path('app_login') }}" class="publicar" style="text-decoration: none; display: inline-block; text-align: center;">
+							Publicar
+						</a>
+					{% endif %}
+					
 					<div
 						class="menu-bar">
 						<!-- Toggle menu functionality can be added here if needed -->
