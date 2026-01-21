@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contenido Borrado - Admin
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h1>Papelera de Reciclaje (Admin)</h1>
+		<p>Mostrando contenido borrado en los últimos 14 días.</p>
+
+		<a href="{{ path('admin_dashboard') }}" class="btn btn-secondary mb-3">Volver al Dashboard</a>
+
+		<h2>Publicaciones Borradas</h2>
+		{% if palabras|length > 0 %}
+			<table class="table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Palabra</th>
+						<th>Autor</th>
+						<th>Fecha Borrado</th>
+						<th>Acción</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for p in palabras %}
+						<tr>
+							<td>{{ p.id }}</td>
+							<td>{{ p.palabra }}</td>
+							<td>{{ p.usuario.nombre }}</td>
+							<td>{{ p.deletedAt|date('d/m/Y H:i') }}</td>
+							<td>
+								<a href="{{ path('admin_trash_restore_palabra', {id: p.id}) }}" class="btn btn-sm btn-success">Restaurar</a>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<p>No hay publicaciones borradas recientemente.</p>
+		{% endif %}
+
+		<hr>
+
+		<h2>Comentarios Borrados</h2>
+		{% if comentarios|length > 0 %}
+			<table class="table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Texto</th>
+						<th>Autor</th>
+						<th>Fecha Borrado</th>
+						<th>Acción</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for c in comentarios %}
+						<tr>
+							<td>{{ c.id }}</td>
+							<td>{{ c.texto|length > 50 ? c.texto|slice(0, 50) ~ '...' : c.texto }}</td>
+							<td>{{ c.usuario.nombre }}</td>
+							<td>{{ c.deletedAt|date('d/m/Y H:i') }}</td>
+							<td>
+								<a href="{{ path('admin_trash_restore_comentario', {id: c.id}) }}" class="btn btn-sm btn-success">Restaurar</a>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<p>No hay comentarios borrados recientemente.</p>
+		{% endif %}
+
+	</div>
+{% endblock %}
+
+{% block right_sidebar %}
+	<!-- Sidebar hidden -->
+{% endblock %}

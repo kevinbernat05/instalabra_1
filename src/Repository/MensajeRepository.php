@@ -35,8 +35,13 @@ class MensajeRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('m');
         
         // Obtenemos todos los mensajes que involucran al usuario
-        $mensajes = $qb->where('m.remitente = :user OR m.destinatario = :user')
+        $mensajes = $qb->join('m.remitente', 'r')
+            ->join('m.destinatario', 'd')
+            ->where('(m.remitente = :user OR m.destinatario = :user)')
+            ->andWhere('r.isBlocked = :blocked')
+            ->andWhere('d.isBlocked = :blocked')
             ->setParameter('user', $user)
+            ->setParameter('blocked', false)
             ->orderBy('m.fechaEnvio', 'DESC')
             ->getQuery()
             ->getResult();
@@ -62,10 +67,13 @@ class MensajeRepository extends ServiceEntityRepository
     public function findConversation(Usuario $user1, Usuario $user2): array
     {
         return $this->createQueryBuilder('m')
+            ->join('m.remitente', 'r')
             ->where('(m.remitente = :user1 AND m.destinatario = :user2)')
             ->orWhere('(m.remitente = :user2 AND m.destinatario = :user1)')
+            ->andWhere('r.isBlocked = :blocked')
             ->setParameter('user1', $user1)
             ->setParameter('user2', $user2)
+            ->setParameter('blocked', false)
             ->orderBy('m.fechaEnvio', 'ASC')
             ->getQuery()
             ->getResult();

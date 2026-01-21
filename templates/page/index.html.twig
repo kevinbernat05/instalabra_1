@@ -27,7 +27,7 @@
 			{{ form_end(form) }}
 		</div>
 	{% endif %}
-	
+
 	<!-- Ranking diario (Moved from Sidebar) -->
 	<div class="rank-diary box" style="margin: 16px; border: 1px solid #eff3f4; border-radius: 12px; background: #f7f9f9;">
 		<h3 style="font-size: 18px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e8ed;">Tendencias del día</h3>
@@ -103,7 +103,7 @@
 				</a>
 
 				<!-- DELETE -->
-				{% if app.user and app.user == palabra.usuario %}
+				{% if app.user and (app.user == palabra.usuario or is_granted('ROLE_ADMIN')) %}
 					<div class="action">
 						<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar?');">
 							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
@@ -124,7 +124,7 @@
 							</span>
 							<span class="message">{{ comentario.texto ?? comentario.contenido ?? '' }}</span>
 						</div>
-						{% if app.user and app.user == comentario.usuario %}
+						{% if app.user and (app.user == comentario.usuario or is_granted('ROLE_ADMIN')) %}
 							<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');" style="margin-left: auto;">
 								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comentario.id) }}">
 								<button type="submit" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>

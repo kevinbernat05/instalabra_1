@@ -74,6 +74,11 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        if ($otherUser->isBlocked()) {
+             $this->addFlash('error', 'No puedes enviar mensajes a este usuario.');
+             return $this->redirectToRoute('app_chat_index');
+        }
+
         $content = $request->request->get('content');
         $mensaje = new Mensaje();
         $mensaje->setRemitente($user);
@@ -118,7 +123,10 @@ class ChatController extends AbstractController
         
         $following = [];
         foreach ($user->getSeguimientosQueHace() as $seguimiento) {
-             $following[] = $seguimiento->getSeguido();
+             $seguido = $seguimiento->getSeguido();
+             if (!$seguido->isBlocked()) {
+                 $following[] = $seguido;
+             }
         }
 
         // TODO: Merge with recent conversations if not in following?

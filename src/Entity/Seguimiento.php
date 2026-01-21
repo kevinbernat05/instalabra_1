@@ -25,6 +25,11 @@ class Seguimiento
     #[ORM\Column(type: "datetime")]
     private $fechaSeguimiento;
 
+    public function __construct()
+    {
+        $this->fechaSeguimiento = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

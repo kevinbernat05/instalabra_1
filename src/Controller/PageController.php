@@ -78,7 +78,7 @@ final class PageController extends AbstractController
                 ['fechaCreacion' => 'DESC']
             );
         } else {
-            $palabras = $palabraRepository->findBy([], ['fechaCreacion' => 'DESC']);
+            $palabras = $palabraRepository->findAllActive();
         }
 
         // --- Ranking Logic for Index ---
@@ -367,7 +367,8 @@ final class PageController extends AbstractController
         $usuario = $this->getUser();
 
         // Verificar que el usuario sea el dueño de la palabra
-        if (!$usuario || $usuario !== $palabra->getUsuario()) {
+        // Verificar que el usuario sea el dueño de la palabra o sea admin
+        if (!$usuario || ($usuario !== $palabra->getUsuario() && !$this->isGranted('ROLE_ADMIN'))) {
             throw $this->createAccessDeniedException('No tienes permiso para eliminar esta publicación.');
         }
 
@@ -375,7 +376,8 @@ final class PageController extends AbstractController
         // confío en que el botón delete será un form con POST.
         // Si se desea CSRF explícito: if ($this->isCsrfTokenValid('delete'.$palabra->getId(), $request->request->get('_token')))
         if ($this->isCsrfTokenValid('delete' . $palabra->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($palabra);
+            //$entityManager->remove($palabra);
+            $palabra->setDeletedAt(new \DateTime());
             $entityManager->flush();
             $this->addFlash('success', 'Publicación eliminada correctamente.');
         } else {
@@ -394,12 +396,13 @@ final class PageController extends AbstractController
     ): RedirectResponse {
         $usuario = $this->getUser();
 
-        if (!$usuario || $usuario !== $comentario->getUsuario()) {
+        if (!$usuario || ($usuario !== $comentario->getUsuario() && !$this->isGranted('ROLE_ADMIN'))) {
             throw $this->createAccessDeniedException('No tienes permiso para eliminar este comentario.');
         }
 
         if ($this->isCsrfTokenValid('delete' . $comentario->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($comentario);
+            //$entityManager->remove($comentario);
+            $comentario->setDeletedAt(new \DateTime());
             $entityManager->flush();
             $this->addFlash('success', 'Comentario eliminado.');
         } else {
@@ -463,15 +466,20 @@ final class PageController extends AbstractController
 
         $palabras = $query ? $em->getRepository(Palabra::class)
             ->createQueryBuilder('p')
-            ->where('p.palabra LIKE :q OR p.definicion LIKE :q')
+            ->join('p.usuario', 'u')
+            ->where('(p.palabra LIKE :q OR p.definicion LIKE :q)')
+            ->andWhere('u.isBlocked = :blocked')
             ->setParameter('q', '%'.$query.'%')
+            ->setParameter('blocked', false)
             ->getQuery()
             ->getResult() : [];
 
         $usuarios = $query ? $em->getRepository(Usuario::class)
             ->createQueryBuilder('u')
             ->where('u.nombre LIKE :q')
+            ->andWhere('u.isBlocked = :blocked')
             ->setParameter('q', '%'.$query.'%')
+            ->setParameter('blocked', false)
             ->getQuery()
             ->getResult() : [];
 

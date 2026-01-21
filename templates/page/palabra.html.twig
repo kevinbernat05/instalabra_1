@@ -16,7 +16,7 @@
 		<small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 	</p>
 
-	{% if app.user and app.user == palabra.usuario %}
+	{% if app.user and (app.user == palabra.usuario or is_granted('ROLE_ADMIN')) %}
 		<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta publicación?');" style="display:inline;">
 			<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
 			<button type="submit" style="color:red;">Eliminar Publicación</button>
@@ -62,7 +62,7 @@
 				{{ comentario.texto }}
 			</p>
 			<small>{{ comentario.fechaCreacion|date('d/m/Y H:i') }}</small>
-			{% if app.user and app.user == comentario.usuario %}
+			{% if app.user and (app.user == comentario.usuario or is_granted('ROLE_ADMIN')) %}
 				<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');" style="display:inline;">
 					<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comentario.id) }}">
 					<button type="submit" style="color:red; font-size: small; border:none; background:none; cursor:pointer;">[x]</button>
