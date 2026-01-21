@@ -3,7 +3,7 @@
 {% endblock %}
 {% block body %}
 
-	<main>
+	<main class="feed">
 		<section class="foto-perfil">
 			<h2>Foto de perfil</h2>
 			<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150">

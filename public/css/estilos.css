@@ -140,7 +140,7 @@ body {
     opacity: 0.7;
 }
 
-/* ================== FLECHA TOGGLE ================== */
+/* ================== FLECHA ================== */
 .toggle-arrow {
     position: fixed;
     top: 50%;
@@ -222,11 +222,76 @@ body {
     border-radius: 2px;
 }
 
+/* ================== FORMULARIO DE PUBLICACIÓN ================== */
+.publish-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eff3f4;
+    margin-bottom: 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.publish-form input,
+.publish-form textarea {
+    width: 100%;
+    padding: 6px 0;
+    border: none;
+    background-color: transparent;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    transition: all 0.2s;
+    resize: none;
+    margin-bottom: 0;
+    outline: none;
+}
+
+.publish-form input::placeholder,
+.publish-form textarea::placeholder {
+    color: #a0a0a0; 
+}
+
+.publish-form input:focus,
+.publish-form textarea:focus {
+    border-bottom: 1px solid #b26eff;
+}
+
+/*Botón de publicar dentro del formulario*/
+.publish-form button.publicar {
+    align-self: flex-end; 
+    margin-top: 12px;
+    padding: 8px 20px;
+    background: #d291ff;    
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: auto;
+}
+
+.publish-form button.publicar:hover {
+    transform: scale(1.03);
+    background-color: #b26eff;
+}
+
 /* ================== POSTS ================== */
 .single_post {
     padding: 16px;
     border-bottom: 1px solid #eff3f4;
     transition: background 0.2s;
+}
+
+.single_post a,
+.comment-text a {
+    text-decoration: none;
+    color: #0f1419;
+    font-weight: 600;
+    transition: color 0.2s, transform 0.2s;
 }
 
 .single_post:hover {
@@ -418,7 +483,7 @@ body {
     margin-bottom: 16px;
 }
 
-/* ================== RANKING DIARIO ================== */
+/* ================== RANKING ================== */
 #word-list {
     list-style: none;
     padding: 0;
@@ -428,8 +493,8 @@ body {
 #word-list li {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 0;
+    gap: 8px;
+    padding: 8px 0;
     border-bottom: 1px solid #eff3f4;
 }
 
@@ -439,9 +504,20 @@ body {
 
 #word-list li .word-name {
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     color: #0f1419;
     min-width: 100px;
+}
+
+#word-list li .word-name a {
+    text-decoration: none;
+    color: #0f1419;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+#word-list li .word-name a:hover {
+    color: #b26eff; 
+    transform: scale(1.05); 
 }
 
 .rank-container {
@@ -461,10 +537,11 @@ body {
 .vote-bar {
     flex: 1;
     position: relative;
-    height: 28px;
+    height: 14px;
     border-radius: 14px;
-    background-color: rgba(210, 145, 255, 0.15);
+    background-color: #ddd;
     overflow: hidden;
+    transition: background 0.3s ease;
 }
 
 .vote-bar .fill {
@@ -472,21 +549,26 @@ body {
     top: 0;
     left: 0;
     height: 100%;
+    width: 0;
     background: linear-gradient(90deg, #d291ff, #b26eff);
-    border-radius: 14px;
-    transition: width 0.4s ease;
+    border-radius: 8px;
+    transition: width 0.6s ease, transform 0.3s ease;
+}
+
+.vote-bar:hover .fill {
+    transform: scaleY(1.3);
 }
 
 .vote-bar .vote-number {
     position: absolute;
-    right: 10px;
+    right: 6px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 600;
     color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     z-index: 2;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* ================== SUGERENCIAS DE USUARIOS ================== */
@@ -565,4 +647,5 @@ body {
 .menu-bar-right::-webkit-scrollbar-thumb:hover {
     background: #b26eff;
 }
+
 
