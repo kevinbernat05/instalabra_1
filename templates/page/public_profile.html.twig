@@ -34,6 +34,14 @@
 				<a href="{{ path('app_chat_show', {id: usuario.id}) }}">
 					<button>Enviar mensaje</button>
 				</a>
+
+				{% if is_granted('ROLE_ADMIN') %}
+					<a href="{{ path('admin_user_toggle_block', {id: usuario.id}) }}" class="btn {{ usuario.isBlocked ? 'btn-warning' : 'btn-danger' }}" style="text-decoration:none;">
+						<button style="background-color: {{ usuario.isBlocked ? '#ffcc00' : '#ff4444' }}; color: white; border: none;">
+							{{ usuario.isBlocked ? 'Desbloquear Usuario' : 'Bloquear Usuario' }}
+						</button>
+					</a>
+				{% endif %}
 			</div>
 		{% endif %}
 	</section>

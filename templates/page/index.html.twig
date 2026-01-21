@@ -72,6 +72,26 @@
 		</div>
 	{% endif %}
 
+	<!-- Ranking diario (Moved from Sidebar) -->
+	<div class="rank-diary box" style="margin: 16px; border: 1px solid #eff3f4; border-radius: 12px; background: #f7f9f9;">
+		<h3 style="font-size: 18px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e8ed;">Tendencias del día</h3>
+		<ol class="word-list" id="word-list" style="list-style: none; padding: 0; margin: 0;">
+			{% for palabra in topWords %}
+				<li style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid #eff3f4;">
+					<span class="word-name" style="font-weight: 600; font-size: 15px; color: #0f1419; min-width: 80px;">
+						<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}" style="color:inherit; text-decoration:none;">{{ palabra.palabraEntity.palabra }}</a>
+					</span>
+					<div class="vote-bar" style="flex: 1; position: relative; height: 12px; background: #e1e8ed; border-radius: 6px; overflow: hidden;">
+						<div class="fill" style="width: {{ (palabra.likesCount / maxLikes * 100)|round }}%; position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, #d291ff, #b26eff); border-radius: 6px;"></div>
+					</div>
+					<span class="vote-number" style="font-size: 13px; font-weight: 700; color: #536471;">{{ palabra.likesCount }}</span>
+				</li>
+			{% else %}
+				<p style="text-align: center; color: #536471; padding: 10px;">No hay tendencias hoy.</p>
+			{% endfor %}
+		</ol>
+	</div>
+
 
 	<!--Bucle para los posts-->
 	{% for palabra in palabras %}
@@ -128,7 +148,7 @@
 				</a>
 
 				<!-- DELETE -->
-				{% if app.user and app.user == palabra.usuario %}
+				{% if app.user and (app.user == palabra.usuario or is_granted('ROLE_ADMIN')) %}
 					<div class="action">
 						<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar?');">
 							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
@@ -149,8 +169,8 @@
 							</span>
 							<span class="message">{{ comentario.texto ?? comentario.contenido ?? '' }}</span>
 						</div>
-						{% if app.user and app.user == comentario.usuario %}
-							<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');">
+						{% if app.user and (app.user == comentario.usuario or is_granted('ROLE_ADMIN')) %}
+							<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');" style="margin-left: auto;">
 								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comentario.id) }}">
 								<button type="submit">&times;</button>
 							</form>

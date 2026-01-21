@@ -33,6 +33,9 @@ class Palabra
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $fechaCreacion;
 
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $deletedAt = null;
+
     public function __construct()
     {
         $this->comentarios = new ArrayCollection();
@@ -97,6 +100,17 @@ class Palabra
     public function setFechaCreacion(\DateTimeInterface $fechaCreacion): self
     {
         $this->fechaCreacion = $fechaCreacion;
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
         return $this;
     }
 }
