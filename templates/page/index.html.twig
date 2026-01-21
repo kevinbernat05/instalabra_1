@@ -7,17 +7,27 @@
 	<!-- Difuminacion del fondo al darle click a publicar -->
 	<div id="blur" class="blur"></div>
 	
+
+	{# Calculamos el maxLikes para el topWords #}
+    {% set maxLikes = 0 %}
+    {% for palabra in topWords %}
+        {% if palabra.likesCount > maxLikes %}
+            {% set maxLikes = palabra.likesCount %}
+        {% endif %}
+    {% endfor %}
+
 	<!-- Ranking diario (Moved from Sidebar) -->
 	<div class="rank-container">
 		<div class="rank-diary box">
 			<h3>Tendencias del día</h3>
 			<ol class="word-list" id="word-list">
-				{% for palabra in topWords %}
+				<!--Limitaremos el top a 3 palabras-->
+				{% for palabra in topWords|slice(0,3) %}
 					<li>
 						<span class="word-name">
 							<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}">{{ palabra.palabraEntity.palabra }}</a>
 						</span>
-						<div class="vote-bar">
+						<div class="vote-bar" data-likes="{{ palabra.likesCount }}" data-max="{{ maxLikes }}">
 							<div class="fill"></div>
 						</div>
 						<span class="vote-number">{{ palabra.likesCount }}</span>
@@ -31,12 +41,13 @@
 		<div class="rank-month box">
 			<h3>Tendencias del mes</h3>
 			<ol class="word-list" id="word-list">
-				{% for palabra in topWords %}
+				<!--Limitaremos el top a 3 palabras-->
+				{% for palabra in topWords|slice(0,3) %}
 					<li>
 						<span class="word-name">
 							<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}">{{ palabra.palabraEntity.palabra }}</a>
 						</span>
-						<div class="vote-bar">
+						<div class="vote-bar" data-likes="{{ palabra.likesCount }}" data-max="{{ maxLikes }}">
 							<div class="fill"></div>
 						</div>
 						<span class="vote-number">{{ palabra.likesCount }}</span>
@@ -60,7 +71,7 @@
 
 	<!-- Formulario de Publicación -->
 	{% if app.user %}
-		<div>
+		<div class="publish-form">
 			{{ form_start(form) }}
 			{# Render fields manually or using form_row #}
 			{{ form_row(form.palabra, {'attr': {'placeholder': 'Palabra', 'class': 'form-input'}}) }}
