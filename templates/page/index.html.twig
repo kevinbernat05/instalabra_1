@@ -4,25 +4,69 @@
 {% endblock %}
 
 {% block body %}
-	<!-- Botones para ti y siguiendo -->
+	<!-- Difuminacion del fondo al darle click a publicar -->
+	<div id="blur" class="blur"></div>
+	
+	<!-- Ranking diario (Moved from Sidebar) -->
+	<div class="rank-container">
+		<div class="rank-diary box">
+			<h3>Tendencias del día</h3>
+			<ol class="word-list" id="word-list">
+				{% for palabra in topWords %}
+					<li>
+						<span class="word-name">
+							<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}">{{ palabra.palabraEntity.palabra }}</a>
+						</span>
+						<div class="vote-bar">
+							<div class="fill"></div>
+						</div>
+						<span class="vote-number">{{ palabra.likesCount }}</span>
+					</li>
+				{% else %}
+					<p>No hay tendencias hoy.</p>
+				{% endfor %}
+			</ol>
+		</div>
+
+		<div class="rank-month box">
+			<h3>Tendencias del mes</h3>
+			<ol class="word-list" id="word-list">
+				{% for palabra in topWords %}
+					<li>
+						<span class="word-name">
+							<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}">{{ palabra.palabraEntity.palabra }}</a>
+						</span>
+						<div class="vote-bar">
+							<div class="fill"></div>
+						</div>
+						<span class="vote-number">{{ palabra.likesCount }}</span>
+					</li>
+				{% else %}
+					<p>No hay tendencias hoy.</p>
+				{% endfor %}
+			</ol>
+		</div>
+	</div>
+
+<!-- Botones para ti y siguiendo -->
 	<div class="feed-buttons">
-		<a href="{{ path('app_home', {'filter': 'foryou'}) }}" style="text-decoration:none; color:inherit; flex:1;">
-			<button id="for-you" class="{{ currentFilter is defined and currentFilter == 'foryou' ? 'active' : (currentFilter is not defined ? 'active' : '') }}" style="width:100%;">Para ti</button>
+		<a href="{{ path('app_home', {'filter': 'foryou'}) }}">
+			<button id="for-you" class="{{ currentFilter is defined and currentFilter == 'foryou' ? 'active' : (currentFilter is not defined ? 'active' : '') }}">Para ti</button>
 		</a>
-		<a href="{{ path('app_home', {'filter': 'following'}) }}" style="text-decoration:none; color:inherit; flex:1;">
-			<button id="following" class="{{ currentFilter is defined and currentFilter == 'following' ? 'active' : '' }}" style="width:100%;">Siguiendo</button>
+		<a href="{{ path('app_home', {'filter': 'following'}) }}">
+			<button id="following" class="{{ currentFilter is defined and currentFilter == 'following' ? 'active' : '' }}">Siguiendo</button>
 		</a>
 	</div>
 
 	<!-- Formulario de Publicación -->
 	{% if app.user %}
-		<div style="padding: 16px; border-bottom: 1px solid #eff3f4;">
+		<div>
 			{{ form_start(form) }}
 			{# Render fields manually or using form_row #}
-			{{ form_row(form.palabra, {'attr': {'placeholder': 'Palabra', 'class': 'form-input', 'style': 'width: 100%; border: none; outline: none; font-size: 18px; font-weight: bold; margin-bottom: 5px;'}}) }}
-			{{ form_row(form.definicion, {'attr': {'placeholder': 'Definición...', 'rows': 2, 'style': 'width: 100%; border: none; outline: none; font-size: 16px; resize: none; font-family: inherit;'}}) }}
-			<div style="display:flex; justify-content: flex-end;">
-				<button type="submit" class="publicar" style="width: auto; padding: 8px 16px; font-size: 14px;">Publicar</button>
+			{{ form_row(form.palabra, {'attr': {'placeholder': 'Palabra', 'class': 'form-input'}}) }}
+			{{ form_row(form.definicion, {'attr': {'placeholder': 'Definición...', 'rows': 2}}) }}
+			<div>
+				<button type="submit" class="publicar">Publicar</button>
 			</div>
 			{{ form_end(form) }}
 		</div>
@@ -48,40 +92,41 @@
 		</ol>
 	</div>
 
+
+	<!--Bucle para los posts-->
 	{% for palabra in palabras %}
 		<section class="single_post">
 			<div class="post_header">
 				<div class="user_info">
 					<img src="{{ palabra.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ palabra.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ palabra.usuario.nombre }}">
 					<span>
-						<a href="{{ path('app_usuario_perfil', {id: palabra.usuario.id}) }}" style="color: inherit; text-decoration: none;">
+						<a href="{{ path('app_usuario_perfil', {id: palabra.usuario.id}) }}">
 							{{ palabra.usuario.nombre }}
 						</a>
 					</span>
-					<small style="color: #536471; font-weight: normal; margin-left: 5px;">·
+					<small>·
 						{{ palabra.fechaCreacion|date('d M') }}</small>
 				</div>
 			</div>
 
-			<p style="font-size: 18px; font-weight: 500; margin-bottom: 5px;">
-				<a href="{{ path('palabra_show', {id: palabra.id}) }}" style="color: inherit; text-decoration: none;">{{ palabra.palabra }}</a>
+			<p>
+				<a href="{{ path('palabra_show', {id: palabra.id}) }}">{{ palabra.palabra }}</a>
 			</p>
 			<p>{{ palabra.definicion }}</p>
 
-			<div
-				class="post-actions">
+			<div class="post-actions">
 				<!-- LIKE -->
 				<div class="action">
 					{% if app.user %}
-						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" style="display:inline;">
+						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
 							{% set liked = false %}
 							{% for v in palabra.valoraciones %}
 								{% if v.likeActiva and v.usuario == app.user %}
 									{% set liked = true %}
 								{% endif %}
 							{% endfor %}
-							<button type="submit" style="background:none; border:none; cursor:pointer; padding:0;">
-								<img src="{{ asset('multimedia/like.png') }}" alt="Me gusta" style="{{ liked ? 'filter: hue-rotate(150deg);' : '' }}">
+							<button type="submit">
+								<img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
 							</button>
 						</form>
 					{% else %}
@@ -97,7 +142,7 @@
 				</div>
 
 				<!-- SHARE -->
-				<a href="{{ path('app_chat_share', {id: palabra.id}) }}" class="action" style="text-decoration:none; color:inherit;">
+				<a href="{{ path('app_chat_share', {id: palabra.id}) }}" class="action">
 					<img src="{{ asset('multimedia/share.png') }}" alt="Compartir">
 					<span class="count">0</span>
 				</a>
@@ -107,7 +152,7 @@
 					<div class="action">
 						<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar?');">
 							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
-							<button type="submit" style="background:none; border:none; cursor:pointer; color: red; font-size: 18px;">&times;</button>
+							<button type="submit">&times;</button>
 						</form>
 					</div>
 				{% endif %}
@@ -120,40 +165,46 @@
 						<img src="{{ comentario.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ comentario.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ comentario.usuario.email }}">
 						<div class="comment-text">
 							<span class="username">
-								<a href="{{ path('app_usuario_perfil', {id: comentario.usuario.id}) }}" style="color:inherit; text-decoration:none;">{{ comentario.usuario.nombre }}</a>
+								<a href="{{ path('app_usuario_perfil', {id: comentario.usuario.id}) }}">{{ comentario.usuario.nombre }}</a>
 							</span>
 							<span class="message">{{ comentario.texto ?? comentario.contenido ?? '' }}</span>
 						</div>
 						{% if app.user and (app.user == comentario.usuario or is_granted('ROLE_ADMIN')) %}
 							<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');" style="margin-left: auto;">
 								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comentario.id) }}">
-								<button type="submit" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+								<button type="submit">&times;</button>
 							</form>
 						{% endif %}
 					</div>
 				{% else %}
-					<p style="padding-left: 60px; color: #999; font-size: 13px;">Aún no hay comentarios.</p>
+					<p>Aún no hay comentarios.</p>
 				{% endfor %}
 
 				{% if palabra.comentarios|length > 3 %}
-					<div style="padding-left: 60px; margin-top: 5px;">
-						<a href="{{ path('palabra_show', {id: palabra.id}) }}" style="font-size: 13px; color: #d291ff;">Ver todos los comentarios...</a>
+					<div>
+						<a href="{{ path('palabra_show', {id: palabra.id}) }}">Ver todos los comentarios...</a>
 					</div>
 				{% endif %}
 
 				{# Formulario de comentario rápido opcional #}
 				{% if app.user %}
-					<form action="{{ path('palabra_comentar', { id: palabra.id }) }}" method="post" style="padding-left: 60px; margin-top: 10px; display:flex; gap: 5px;">
-						<input type="text" name="comentario_texto" placeholder="Agrega un comentario..." required style="flex:1; border: 1px solid #ddd; border-radius: 20px; padding: 5px 10px; outline:none; font-size: 13px;">
-						<button type="submit" style="background:none; border:none; color: #d291ff; font-weight:bold; cursor:pointer;">Publicar</button>
+					<form action="{{ path('palabra_comentar', { id: palabra.id }) }}" method="post">
+						<input type="text" name="comentario_texto" placeholder="Agrega un comentario..." required>
+						<button type="submit">Publicar</button>
 					</form>
 				{% endif %}
 			</div>
 
+
 		</section>
 	{% else %}
-		<div style="padding: 20px; text-align: center; color: #536471;">
+		<div>
 			<p>No hay publicaciones aún. ¡Sé el primero!</p>
 		</div>
 	{% endfor %}
+	<!-- Ventana que va a aparecer al darle click al botón -->
+	<div id="window" class="window">
+		<h2>Publicar</h2>
+		<button id="close-window">Cerrar</button>
+	</div>
 {% endblock %}

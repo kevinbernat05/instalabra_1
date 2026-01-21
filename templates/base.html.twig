@@ -53,8 +53,19 @@
 						</ul>
 					</nav>
 
-					<button class="publicar" onclick="document.querySelector('form[name=\'palabra\'] input[type=\'text\']').focus(); window.scrollTo({top:0, behavior:'smooth'});">Publicar</button>
-
+					{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+						{# Botón para usuarios logueados: hace scroll y focus #}
+						<button class="publicar" 
+								onclick="document.querySelector('form[name=\'palabra\'] input[type=\'text\']').focus(); window.scrollTo({top:0, behavior:'smooth'});">
+							Publicar
+						</button>
+					{% else %}
+						{# Enlace para usuarios NO logueados: redirige al login #}
+						<a href="{{ path('app_login') }}" class="publicar" style="text-decoration: none; display: inline-block; text-align: center;">
+							Publicar
+						</a>
+					{% endif %}
+					
 					<div
 						class="menu-bar">
 						<!-- Toggle menu functionality can be added here if needed -->
@@ -66,7 +77,7 @@
 				<main class="feed">
 					{% for label, messages in app.flashes %}
 						{% for message in messages %}
-							<div class="flash-{{ label }}" style="padding: 10px; background: #f0f0f0; margin: 5px; border-left: 4px solid #d291ff;">
+							<div class="flash-{{ label }}">
 								{{ message }}
 							</div>
 						{% endfor %}
@@ -89,34 +100,34 @@
 			<!-- Scripts-->
 			<!-- Debug Mode Widget -->
 			{% if app.session.get('debug_mode') %}
-				<div style="position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #ccc; padding: 15px; z-index: 9999; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: sans-serif; min-width: 250px;">
-					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-						<h4 style="margin: 0; color: #d32f2f; font-size: 14px; text-transform: uppercase; font-weight: bold;">🔧 Debug Mode</h4>
-						<span style="font-size: 10px; background: #ffebee; color: #c62828; padding: 2px 6px; border-radius: 4px;">ACTIVO</span>
+				<div>
+					<div>
+						<h4>🔧 Debug Mode</h4>
+						<span>ACTIVO</span>
 					</div>
 
-					<p style="margin: 0 0 10px 0; font-size: 13px; color: #555;">
+					<p>
 						<strong>Fecha Simulada:</strong><br>
 						{{ app.session.get('simulated_date') ? app.session.get('simulated_date') : 'Tiempo Real (Hoy)' }}
 					</p>
 
-					<form action="{{ path('debug_set_date') }}" method="post" style="margin-bottom: 8px;">
-						<input type="datetime-local" name="simulated_date" value="{{ app.session.get('simulated_date') }}" step="1" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; margin-bottom: 5px;">
-						<button type="submit" style="width: 100%; padding: 6px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">Establecer Fecha</button>
+					<form action="{{ path('debug_set_date') }}" method="post">
+						<input type="datetime-local" name="simulated_date" value="{{ app.session.get('simulated_date') }}" step="1">
+						<button type="submit">Establecer Fecha</button>
 					</form>
 
-					<div style="display: flex; gap: 5px;">
-						<form action="{{ path('debug_set_date') }}" method="post" style="flex: 1;">
+					<div>
+						<form action="{{ path('debug_set_date') }}" method="post">
 							<input type="hidden" name="simulated_date" value="">
-							<button type="submit" style="width: 100%; padding: 6px; background: #90a4ae; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">Reset Hoy</button>
+							<button type="submit">Reset Hoy</button>
 						</form>
-						<a href="{{ path('debug_toggle') }}" style="flex: 1; text-align: center; padding: 6px; background: #d32f2f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; text-decoration: none; display: inline-block; box-sizing: border-box;">Desactivar</a>
+						<a href="{{ path('debug_toggle') }}">Desactivar</a>
 					</div>
 				</div>
 			{% else %}
 				<!-- Footer link for debug -->
-				<div style="position:fixed; bottom: 20px; right: 20px; z-index: 9999;">
-					<a href="{{ path('debug_toggle') }}" style="display: block; width: 40px; height: 40px; background: #eee; border-radius: 50%; text-align: center; line-height: 40px; font-size: 20px; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" title="Activar Modo Debug">🛠️</a>
+				<div>
+					<a href="{{ path('debug_toggle') }}" title="Activar Modo Debug">🛠️</a>
 				</div>
 			{% endif %}
 
