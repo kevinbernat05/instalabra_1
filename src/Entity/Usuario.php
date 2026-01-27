@@ -93,8 +93,8 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "json", nullable: true)]
     private ?array $roles = [];
 
-    #[ORM\Column(type: "boolean", nullable: true)]
-    private ?bool $isBlocked = null;
+    #[ORM\Column(type: "boolean", nullable: true, options: ["default" => false])]
+    private ?bool $isBlocked = false;
 
     public function getRoles(): array
     {

@@ -20,7 +20,7 @@ class PalabraRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->join('p.usuario', 'u')
-            ->andWhere('u.isBlocked = :blocked')
+            ->andWhere('u.isBlocked = :blocked OR u.isBlocked IS NULL')
             ->andWhere('p.deletedAt IS NULL')
             ->setParameter('blocked', false)
             ->orderBy('p.fechaCreacion', 'DESC')
