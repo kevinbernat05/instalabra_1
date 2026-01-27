@@ -90,8 +90,34 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getRoles(): array { return ['ROLE_USER']; }
-    public function eraseCredentials(): void {}
+    #[ORM\Column(type: "json", nullable: true)]
+    private ?array $roles = [];
+
+    #[ORM\Column(type: "boolean", nullable: true)]
+    private ?bool $isBlocked = null;
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles ?? [];
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
     public function getUserIdentifier(): string { return $this->email; }
 
     public function __construct() {
@@ -140,6 +166,17 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     public function setBiografia(?string $biografia): self
     {
         $this->biografia = $biografia;
+        return $this;
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->isBlocked ?? false;
+    }
+
+    public function setIsBlocked(bool $isBlocked): self
+    {
+        $this->isBlocked = $isBlocked;
         return $this;
     }
 }

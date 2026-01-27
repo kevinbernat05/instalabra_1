@@ -87,7 +87,9 @@
 				</main>
 
 				<!-- Barra lateral derecha -->
-				{{ render(controller('App\\Controller\\PageController::rankingWidget')) }}
+				{% block right_sidebar %}
+					{{ render(controller('App\\Controller\\PageController::rankingWidget')) }}
+				{% endblock %}
 			</div>
 
 			<!-- Flecha para que se pueda plegar/desplegar el menú -->

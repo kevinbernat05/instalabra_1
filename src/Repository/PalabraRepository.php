@@ -15,9 +15,22 @@ class PalabraRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Palabra::class);
     }
+
+    public function findAllActive(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.usuario', 'u')
+            ->andWhere('u.isBlocked = :blocked')
+            ->andWhere('p.deletedAt IS NULL')
+            ->setParameter('blocked', false)
+            ->orderBy('p.fechaCreacion', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     public function findAllOrderedByDate(): array
     {
         return $this->createQueryBuilder('p')
+            ->where('p.deletedAt IS NULL')
             ->orderBy('p.fechaCreacion', 'DESC') // DESC = más reciente primero
             ->getQuery()
             ->getResult();
@@ -26,6 +39,7 @@ class PalabraRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->select('p AS palabraEntity, COUNT(v.id) AS likesCount') // Select entity and count
+            ->where('p.deletedAt IS NULL')
             ->leftJoin('p.valoraciones', 'v', 'WITH', 'v.likeActiva = true' . ($startDate ? ' AND v.fechaCreacion >= :startDate' : ''))
             ->groupBy('p.id')
             ->orderBy('likesCount', 'DESC');

@@ -138,7 +138,7 @@
 				</a>
 
 				<!-- DELETE -->
-				{% if app.user and app.user == palabra.usuario %}
+				{% if app.user and (app.user == palabra.usuario or is_granted('ROLE_ADMIN')) %}
 					<div class="action">
 						<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar?');">
 							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
@@ -159,8 +159,8 @@
 							</span>
 							<span class="message">{{ comentario.texto ?? comentario.contenido ?? '' }}</span>
 						</div>
-						{% if app.user and app.user == comentario.usuario %}
-							<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');">
+						{% if app.user and (app.user == comentario.usuario or is_granted('ROLE_ADMIN')) %}
+							<form method="post" action="{{ path('comentario_delete', {id: comentario.id}) }}" onsubmit="return confirm('¿Eliminar comentario?');" style="margin-left: auto;">
 								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comentario.id) }}">
 								<button type="submit">&times;</button>
 							</form>
