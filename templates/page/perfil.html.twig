@@ -1,88 +1,92 @@
 {% extends 'base.html.twig' %}
-{% block title %}Mi Perfil - Instalabra{% endblock %}
+{% block title %}Mi Perfil - Instalabra
+{% endblock %}
 
 {% block body %}
-<main class="feed">
-    <!-- FOTO DE PERFIL -->
-    <section class="foto-perfil">
-        <img class="profile-picture" src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}">
-        <h2>{{ usuario.nombre }}</h2>
+	<main
+		class="feed">
+		<!-- FOTO DE PERFIL -->
+		<section class="foto-perfil">
+			<img class="profile-picture" src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ usuario.nombre }}">
+			<h2>{{ usuario.nombre }}</h2>
 
-        {% if usuario.biografia %}
-            <p class="bio">{{ usuario.biografia }}</p>
-        {% endif %}
+			{% if usuario.biografia %}
+				<p class="bio">{{ usuario.biografia }}</p>
+			{% endif %}
 
-        <div class="follow-info">
-            <div class="followers">
-                <strong>{{ usuario.seguimientosQueRecibe|length }}</strong>
-                <span>Seguidores</span>
-            </div>
-            <div class="following">
-                <strong>{{ usuario.seguimientosQueHace|length }}</strong>
-                <span>Seguidos</span>
-            </div>
-        </div>
+			<div class="follow-info">
+				<div class="followers">
+					<strong>{{ usuario.seguimientosQueRecibe|length }}</strong>
+					<span>Seguidores</span>
+				</div>
+				<div class="following">
+					<strong>{{ usuario.seguimientosQueHace|length }}</strong>
+					<span>Seguidos</span>
+				</div>
+			</div>
 
-        {% if app.user and app.user.id == usuario.id %}
-            <button onclick="window.location.href='{{ path('perfil_editar') }}'">Editar perfil</button>
-        {% endif %}
-    </section>
+			{% if app.user and app.user.id == usuario.id %}
+				<button onclick="window.location.href='{{ path('perfil_editar') }}'">Editar perfil</button>
+			{% endif %}
+		</section>
 
-    <hr>
+		<hr>
 
-    <!-- POSTS DEL USUARIO -->
-    {% if palabras|length > 0 %}
-        {% for palabra in palabras %}
-            <section class="single_post">
-                <div class="post_header">
-                    <div class="user_info">
-                        <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}">
-                        <span>{{ usuario.nombre }}</span>
-                        <small>· {{ palabra.fechaCreacion|date('d M Y H:i') }}</small>
-                    </div>
-                </div>
+		<!-- POSTS DEL USUARIO -->
+		{% if palabras|length > 0 %}
+			{% for palabra in palabras %}
+				<section class="single_post">
+					<div class="post_header">
+						<div class="user_info">
+							<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ usuario.nombre }}">
+							<span>{{ usuario.nombre }}</span>
+							<small>·
+								{{ palabra.fechaCreacion|date('d M Y H:i') }}</small>
+						</div>
+					</div>
 
-                <p>
-                    <a href="{{ path('palabra_show', {id: palabra.id}) }}">{{ palabra.palabra }}</a>
-                </p>
-                <p>{{ palabra.definicion }}</p>
+					<p>
+						<a href="{{ path('palabra_show', {id: palabra.id}) }}">{{ palabra.palabra }}</a>
+					</p>
+					<p>{{ palabra.definicion }}</p>
 
-                <div class="post-actions">
-                    <!-- LIKE -->
-                    <div class="action">
-                        {% if app.user %}
-                            <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
-                                {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
-                                <button type="submit">
-                                    <img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
-                                </button>
-                            </form>
-                        {% else %}
-                            <img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
-                        {% endif %}
-                        <span class="count">{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</span>
-                    </div>
+					<div
+						class="post-actions">
+						<!-- LIKE -->
+						<div class="action">
+							{% if app.user %}
+								<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
+									{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
+									<button type="submit">
+										<img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
+									</button>
+								</form>
+							{% else %}
+								<img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
+							{% endif %}
+							<span class="count">{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</span>
+						</div>
 
-                    <!-- COMENTARIOS -->
-                    <div class="action" onclick="window.location.href='{{ path('palabra_show', {id: palabra.id}) }}'">
-                        <img src="{{ asset('multimedia/comment.png') }}" alt="Comentar">
-                        <span class="count">{{ palabra.comentarios|length }}</span>
-                    </div>
+						<!-- COMENTARIOS -->
+						<div class="action" onclick="window.location.href='{{ path('palabra_show', {id: palabra.id}) }}'">
+							<img src="{{ asset('multimedia/comment.png') }}" alt="Comentar">
+							<span class="count">{{ palabra.comentarios|length }}</span>
+						</div>
 
-                    <!-- DELETE -->
-                    {% if app.user and app.user == palabra.usuario %}
-                        <div class="action">
-                            <form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar?');">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
-                                <button type="submit">&times;</button>
-                            </form>
-                        </div>
-                    {% endif %}
-                </div>
-            </section>
-        {% endfor %}
-    {% else %}
-        <p>Aún no has publicado ninguna palabra.</p>
-    {% endif %}
-</main>
+						<!-- DELETE -->
+						{% if app.user and app.user == palabra.usuario %}
+							<div class="action">
+								<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar?');">
+									<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
+									<button type="submit">&times;</button>
+								</form>
+							</div>
+						{% endif %}
+					</div>
+				</section>
+			{% endfor %}
+		{% else %}
+			<p>Aún no has publicado ninguna palabra.</p>
+		{% endif %}
+	</main>
 {% endblock %}

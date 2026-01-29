@@ -22,7 +22,7 @@ class UsuarioRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('u')
             ->leftJoin('u.seguimientosQueRecibe', 's')
-            ->where('u.isBlocked = :blocked') // Ensure user is not blocked
+            ->where('u.isBlocked = :blocked OR u.isBlocked IS NULL') // Ensure user is not blocked (handling NULL)
             ->setParameter('blocked', false)
             ->addSelect('COUNT(s.id) AS followersCount')
             ->groupBy('u.id')

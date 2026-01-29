@@ -7,7 +7,7 @@
 {% block body %}
 	<section class="foto-perfil">
 		<h2>{{ usuario.nombre }}</h2>
-		<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('images/default-profile.png') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150">
+		<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150">
 
 		<div>
 			<p>
@@ -22,11 +22,11 @@
 		{% if app.user and app.user != usuario %}
 			<div>
 				{% if isFollowing %}
-					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}">
+					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}" class="ajax-follow-link">
 						<button>Dejar de seguir</button>
 					</a>
 				{% else %}
-					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}">
+					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}" class="ajax-follow-link">
 						<button>Seguir</button>
 					</a>
 				{% endif %}
@@ -63,7 +63,7 @@
 					<small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
 
 					{% if app.user %}
-						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
+						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" class="ajax-like-form">
 							{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
 							<button type="submit">
 								{% if liked %}💖 Ya te gusta{% else %}👍 Like

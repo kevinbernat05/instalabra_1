@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Entity\Comentario;
 use App\Entity\Seguimiento;
@@ -92,14 +93,57 @@ final class PageController extends AbstractController
         }
         // -------------------------------
 
+
         return $this->render('page/index.html.twig', [
             'form' => $form->createView(),
             'palabras' => $palabras,
             'currentFilter' => $filter,
             'topWords' => $topPalabras,
-            'maxLikes' => $maxLikes
+            'maxLikes' => $maxLikes,
+            // Pass monthly top words for initial render if we want, but template only showed "Trends of the day" and "Trends of the month"
+            // Wait, the template logic for "month" was using `topWords` again?
+            // Line 45 in index.html.twig: `for palabra in topWords|slice(0,3)` in `rank-month` box.
+            // IT WAS USING THE SAME VARIABLE `topWords` (derived from daily -1 day) FOR BOTH!
+            // I should fix that in the controller too while I am here, or at least be aware of it.
+            // The prompt says "trends of the day" and "trends of the month".
+            // See PageController line 86-87: $startDate = (clone $now)->modify('-1 day'); $topPalabras = ...
+            // And index.html.twig reuses it.
+            // I will fix the initial render to use correct monthly data too in the index method.
+            'topWordsMonth' => $palabraRepository->findTopByLikes(5, (clone $this->timeService->getNow())->modify('-1 month'))
         ]);
         }
+
+    #[Route('/api/trending', name: 'api_trending')]
+    public function trendingApi(PalabraRepository $palabraRepository): JsonResponse
+    {
+        $now = $this->timeService->getNow();
+        $daily = $palabraRepository->findTopByLikes(3, (clone $now)->modify('-1 day'));
+        $monthly = $palabraRepository->findTopByLikes(3, (clone $now)->modify('-1 month'));
+
+        $format = function($list) {
+            $formatted = [];
+            $max = 0;
+            foreach ($list as $item) {
+                if ($item['likesCount'] > $max) $max = $item['likesCount'];
+            }
+            if ($max == 0) $max = 1;
+
+            foreach ($list as $item) {
+                $formatted[] = [
+                    'id' => $item['palabraEntity']->getId(),
+                    'palabra' => $item['palabraEntity']->getPalabra(),
+                    'likes' => $item['likesCount'],
+                    'max' => $max
+                ];
+            }
+            return $formatted;
+        };
+
+        return $this->json([
+            'daily' => $format($daily),
+            'monthly' => $format($monthly)
+        ]);
+    }
 
     // ----------------- Toggle Like / Quitar Like -----------------
     #[Route('/palabra/like/{id}', name: 'palabra_like_toggle')]
@@ -107,7 +151,7 @@ final class PageController extends AbstractController
         Request $request,
         Palabra $palabra,
         EntityManagerInterface $entityManager
-    ): RedirectResponse {
+    ): Response {
         $usuario = $this->getUser();
         $valoracionRepo = $entityManager->getRepository(Valoracion::class);
 
@@ -137,6 +181,17 @@ final class PageController extends AbstractController
         }
 
         $entityManager->flush();
+
+        if ($request->isXmlHttpRequest() || $request->headers->get('Accept') === 'application/json') {
+            $count = 0;
+            foreach ($palabra->getValoraciones() as $v) {
+                if ($v->isLikeActiva()) $count++;
+            }
+            return $this->json([
+                'liked' => $valoracion->isLikeActiva(),
+                'count' => $count
+            ]);
+        }
 
         return $this->redirect($request->headers->get('referer'));
     }
@@ -225,7 +280,7 @@ final class PageController extends AbstractController
         EntityManagerInterface $entityManager,
         SeguimientoRepository $seguimientoRepository,
         Request $request
-    ): RedirectResponse {
+    ): Response {
         /** @var Usuario $currentUser */
         $currentUser = $this->getUser();
         if (!$currentUser) {
@@ -233,6 +288,9 @@ final class PageController extends AbstractController
         }
 
         if ($currentUser === $usuarioToFollow) {
+            if ($request->isXmlHttpRequest() || $request->headers->get('Accept') === 'application/json') {
+                return $this->json(['error' => 'No puedes seguirte a ti mismo'], 400);
+            }
             return $this->redirect($request->headers->get('referer'));
         }
 
@@ -245,92 +303,22 @@ final class PageController extends AbstractController
             $entityManager->remove($existingFollow);
         } else {
             $seguimiento = new Seguimiento();
-            // Assuming setters exist or using reflection/construct if not...
-            // Checking Seguimiento.php entity previously viewed...
-            // It has properties but no setters shown in view_file. 
-            // I should assume standard setters or direct property access if public? 
-            // Wait, I need to check Segmento entity again if I missed setters.
-            // The view_file output for Seguimiento.php only showed properties.
-            // I will assume I need to ADD GENERATED methods to Seguimiento.php OR use Reflection?
-            // "No setters shown" -> I must add them.
-            // I will pause this controller update to fix Entity first? 
-            // NO, I will write assuming they exist, and FIX the entity in the same turn or next.
-            // Actually, I saw the file and it had NO methods. I MUST fix the entity.
-            // However, I am in the middle of writing Controller. 
-            // I will assume I will fix the entity in the next step.
-
-            // Wait, if I write code that uses non-existent methods, it's fine as long as I add them before running.
-            // But for `new Seguimiento()`, I need to set properties.
-            // I will assume standard setters: setSeguidor, setSeguido, setFechaSeguimiento.
-
-            // Correction: I should probably update the Entity FIRST if I want to be safe.
-            // But I am already in this tool call. I will write the code assuming setters and then IMMEDIATELLY fix the entity.
-
-            // Let's create the instance and set properties using setters I WILL create.
-            // Or better, I can try to use Reflection or just update the entity now in a parallel tool call?
-            // "Do NOT make multiple parallel calls to this tool or the replace_file_content..."
-            // I am using replace_file_content.
-
-            // I'll proceed with setters: setSeguidor, setSeguido, setFechaSeguimiento.
-
-            /* 
-               $seguimiento->setSeguidor($currentUser);
-               $seguimiento->setSeguido($usuarioToFollow);
-               $seguimiento->setFechaSeguimiento(new \DateTime());
-            */
-            // But wait, the Entity displayed earlier had NOTHING inside.
-            // I will trust I will add them.
-
-            // Actually, I will COMMENT OUT the logic here or use a TODO if I am unsure, 
-            // but I should just do it.
-
-            // Let's look at the previous view_file of Seguimiento.php (Step 20).
-            // It has:
-            // private int $id;
-            // private Usuario $seguidor;
-            // private Usuario $seguido;
-            // private \DateTimeInterface $fechaSeguimiento;
-            // AND NO METHODS.
-
-            // So I MUST add getters and setters to Seguimiento.php.
-
-            // I will finish this tool call with the assumed setters, then immediately update Seguimiento.php.
-
-            // Wait, I can't add methods to Seguimiento.php and Controller in same tool call if they are different files?
-            // "Do NOT make multiple parallel calls to this tool or the multi_replace_file_content tool for the same file."
-            // Different files is OK for parallel calls? 
-            // "Do NOT make multiple parallel calls to this tool ... for the same file." implies multiple calls for DIFFERENT files is OK if the tools allow parallel execution.
-            // But `replace_file_content` says "execute this tool immediately (parallel with other tools)" is default FALSE/OMITTED?
-            // "waitForPreviousTools: If true..."
-            // The prompt says "Do NOT make multiple parallel calls to this tool...".
-            // It's safer to do it sequentially or use multi_replace if I could (but they are different files).
-
-            // I will do Controller first, then Entity.
-
-            // logic:
-            /*
-           $seguimiento = new Seguimiento();
-           $seguimiento->setSeguidor($currentUser);
-           $seguimiento->setSeguido($usuarioToFollow);
-           $seguimiento->setFechaSeguimiento(new \DateTime());
-           $entityManager->persist($seguimiento);
-            */
-        }
-
-        /* 
-        Code for toggleFollow:
-        */
-        if ($existingFollow) {
-            $entityManager->remove($existingFollow);
-        } else {
-            $seguimiento = new Seguimiento();
             $seguimiento->setSeguidor($currentUser);
             $seguimiento->setSeguido($usuarioToFollow);
             $seguimiento->setFechaSeguimiento(new \DateTime());
             $entityManager->persist($seguimiento);
         }
 
+
+
         $entityManager->flush();
+
+        if ($request->isXmlHttpRequest() || $request->headers->get('Accept') === 'application/json') {
+            return $this->json([
+                'following' => !$existingFollow, // If it existed, we removed it (false). If not, we added it (true).
+                'followersCount' => $seguimientoRepository->countFollowers($usuarioToFollow)
+            ]);
+        }
 
         return $this->redirect($request->headers->get('referer'));
     }
@@ -468,7 +456,7 @@ final class PageController extends AbstractController
             ->createQueryBuilder('p')
             ->join('p.usuario', 'u')
             ->where('(p.palabra LIKE :q OR p.definicion LIKE :q)')
-            ->andWhere('u.isBlocked = :blocked')
+            ->andWhere('(u.isBlocked = :blocked OR u.isBlocked IS NULL)')
             ->setParameter('q', '%'.$query.'%')
             ->setParameter('blocked', false)
             ->getQuery()
@@ -477,7 +465,7 @@ final class PageController extends AbstractController
         $usuarios = $query ? $em->getRepository(Usuario::class)
             ->createQueryBuilder('u')
             ->where('u.nombre LIKE :q')
-            ->andWhere('u.isBlocked = :blocked')
+            ->andWhere('(u.isBlocked = :blocked OR u.isBlocked IS NULL)')
             ->setParameter('q', '%'.$query.'%')
             ->setParameter('blocked', false)
             ->getQuery()
