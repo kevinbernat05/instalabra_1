@@ -7,7 +7,6 @@
 	<!-- Difuminacion del fondo al darle click a publicar -->
 	<div id="blur" class="blur"></div>
 	
-
 	{# Calculamos el maxLikes para el topWords #}
     {% set maxLikes = 0 %}
     {% for palabra in topWords %}
@@ -16,7 +15,7 @@
         {% endif %}
     {% endfor %}
 
-	<!-- Ranking diario (Moved from Sidebar) -->
+	<!-- Ranking diario -->
 	<div class="rank-container">
 		<div class="rank-diary box">
 			<h3>Tendencias del día</h3>
@@ -40,20 +39,14 @@
 
 		<div class="rank-month box">
 			<h3>Tendencias del mes</h3>
-			{% set maxLikesMonth = 0 %}
-			{% for p in topWordsMonth %}
-				{% if p.likesCount > maxLikesMonth %}{% set maxLikesMonth = p.likesCount %}{% endif %}
-			{% endfor %}
-			{% if maxLikesMonth == 0 %}{% set maxLikesMonth = 1 %}{% endif %}
-
 			<ol class="word-list" id="ranking-monthly">
 				<!--Limitaremos el top a 3 palabras-->
-				{% for palabra in topWordsMonth|slice(0,3) %}
+				{% for palabra in topWords|slice(0,3) %}
 					<li>
 						<span class="word-name">
 							<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}">{{ palabra.palabraEntity.palabra }}</a>
 						</span>
-						<div class="vote-bar" data-likes="{{ palabra.likesCount }}" data-max="{{ maxLikesMonth }}">
+						<div class="vote-bar" data-likes="{{ palabra.likesCount }}" data-max="{{ maxLikes }}">
 							<div class="fill"></div>
 						</div>
 						<span class="vote-number">{{ palabra.likesCount }}</span>
@@ -114,7 +107,7 @@
 				<!-- LIKE -->
 				<div class="action">
 					{% if app.user %}
-						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" class="ajax-like-form">
+						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
 							{% set liked = false %}
 							{% for v in palabra.valoraciones %}
 								{% if v.likeActiva and v.usuario == app.user %}

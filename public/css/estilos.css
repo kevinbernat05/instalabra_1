@@ -822,3 +822,108 @@ body {
 .single_post button:hover {
   background-color: #b26eff;
 }
+
+/* ================== PAGINA DE RANKINGS ================== */
+/* ================== RANKING ================== */
+.ranking-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.ranking-container > div {
+  flex: 1;
+  min-width: 280px;
+  border: 2px solid #d291ff;
+  border-radius: 16px;
+  padding: 16px 20px;
+}
+
+/*Titulos de cada ranking*/
+.ranking-container h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #7b5cf7;
+  margin-bottom: 12px;
+}
+
+/*Personalizacion de la lista dentro del top*/
+.ranking-container ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ranking-container li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dotted #d8b4fe;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.ranking-container li:last-child {
+  border-bottom: none;
+}
+
+.ranking-container li:hover {
+  background-color: rgba(178, 110, 255, 0.05);
+}
+
+.ranking-container li .vote-bar {
+  flex: 1;
+  height: 12px;
+  border-radius: 12px;
+  background-color: #ddd;
+  overflow: hidden;
+  margin-left: 10px;
+  margin-right: 10px;
+  position: relative;
+}
+
+.ranking-container li .vote-bar .fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #d291ff, #b26eff);
+  border-radius: 8px;
+  transition: width 0.6s ease;
+}
+
+.ranking-container li .vote-number {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f1419;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* ================== NAVEGATION ================== */
+.navegation {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.navegation a {
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background-color: #f3e8ff;
+  color: #917fd8;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.navegation a:hover {
+  background-color: #e0c8ff;
+}
+
+.navegation a.active {
+  background-color: #8576be;
+  color: white;
+}
