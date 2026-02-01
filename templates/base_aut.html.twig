@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}Instalabra
+			{% endblock %}
+		</title>
+
+		<!-- Links -->
+		<link
+		rel="icon" type="image/png" href="{{ asset('multimedia/logo.png') }}">
+		<!-- Linking the correct CSS file -->
+        <link rel="stylesheet" href="{{ asset('css/auth.css') }}"> {% block stylesheets %}{% endblock %}
+
+		<!-- Fuentes -->
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> {% block javascripts %}{% endblock %}
+    </head>
+
+</head>
+
+<!-- Creacion de una nueva pagina base para aquellos que no al iniciar sesion
+no les salga lo mismo que a los usuarios que estan autenticados -->
+<body class="auth-page">
+     <div class="auth-container">
+        <!-- Logo central -->
+        <div class="auth-logo">
+            <img src="{{ asset('multimedia/logo.png') }}" alt="Logo de Instalabra">
+            <h1>Instalabra</h1>
+        </div>
+
+        <!-- Contenido principal (formulario de login/registro) -->
+        <main class="auth-content">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash-{{ label }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block body %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ asset('js/instalabra.js') }}"></script>
+    <script src="{{ asset('js/menu.js') }}"></script>
+</body>
+</html>

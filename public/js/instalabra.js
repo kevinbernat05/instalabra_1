@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             }
                         } else {
                             // Text button (Profile)
-                            btn.innerHTML = data.liked ? '💖 Ya te gusta' : '👍 Like';
+                            btn.innerHTML = data.liked ? 'Ya te gusta' : 'Like';
                         }
 
                         // Trigger ranking update

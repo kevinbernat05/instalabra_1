@@ -1,64 +1,57 @@
-{% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %} 
+{% block title %}Ranking de palabras {% endblock %} 
 
-{% block title %}Ranking de palabras
-{% endblock %}
-
-{% block body %}
-	<h1>Ranking de palabras por likes</h1>
-
-	<div>
-		<a href="{{ path('app_ranking', {period: 'daily'}) }}" {% if period == 'daily' %} {% endif %}>Diario</a>
-		|
-		<a href="{{ path('app_ranking', {period: 'weekly'}) }}" {% if period == 'weekly' %} {% endif %}>Semanal</a>
-		|
-		<a href="{{ path('app_ranking', {period: 'monthly'}) }}" {% if period == 'monthly' %} {% endif %}>Mensual</a>
-	</div>
-
-	<div>
-		<div>
-			<h2>Top Palabras</h2>
-			{% if palabras|length > 0 %}
-				<ol>
-					{% for row in palabras %}
-						{% set palabra = row.palabraEntity %}
-						{% set likesCount = row.likesCount %}
-						<li>
-							<p>
-								<strong>
-									<a href="{{ path('app_usuario_perfil', {id: palabra.usuario.id}) }}">{{ palabra.usuario.nombre }}</a>
-								</strong>:
-								{{ palabra.palabra }}</p>
-							<p>👍 Likes:
-								{{ likesCount }}</p>
-						</li>
-					{% endfor %}
-				</ol>
-			{% else %}
-				<p>No hay palabras con likes todavía.</p>
-			{% endif %}
-		</div>
-
-		<div>
-			<h2>Top Usuarios</h2>
-			{% if usuarios|length > 0 %}
-				<ol>
-					{% for row in usuarios %}
-						{% set usuario = row[0] %}
-						{% set followersCount = row.followersCount %}
-						<li>
-							<p>
-								<strong>
-									<a href="{{ path('app_usuario_perfil', {id: usuario.id}) }}">{{ usuario.nombre }}</a>
-								</strong>
-							</p>
-							<p>👥 Seguidores:
-								{{ followersCount }}</p>
-						</li>
-					{% endfor %}
-				</ol>
-			{% else %}
-				<p>No hay usuarios seguidos todavía.</p>
-			{% endif %}
-		</div>
-	</div>
+{% block body %} 
+<div class="navegation"> 
+	<a href="{{ path('app_ranking', {period: 'daily'}) }}" {% if period == 'daily' %} {% endif %}>Diario</a>  
+	<a href="{{ path('app_ranking', {period: 'weekly'}) }}" {% if period == 'weekly' %} {% endif %}>Semanal</a> 
+	<a href="{{ path('app_ranking', {period: 'monthly'}) }}" {% if period == 'monthly' %} {% endif %}>Mensual</a> 
+	<!-- | <a href="{{ path('app_ranking', {period: 'yearly'}) }}" {% if period == 'yearly' %} {% endif %}>Anual</a>--> </div> 
+	
+	<!--Ranking de palabras--> 
+	<div class="ranking-container"> 
+		<div> 
+			<h2>Top Palabras</h2> 
+			{% if palabras|length > 0 %} 
+			<ol> 
+				{% for row in palabras %} 
+				{% set palabra = row.palabraEntity %} 
+				{% set likesCount = row.likesCount %}  
+					<li> 
+						<p>  
+							{{ palabra.palabra }} 
+						</p> 
+						<div class="vote-bar" data-likes="{{ likesCount }}" data-max="{{ maxLikes }}"> 
+							<div class="fill"></div> 
+						</div> 
+						<span class="vote-number">{{ likesCount }}</span> 
+					</li> 
+				{% endfor %} 
+			</ol> 
+			{% else %} 
+				<p>No hay palabras aún.</p> 
+			{% endif %} 
+		</div> 
+		
+		<!--Ranking de usuarios--> 
+		<div> 
+			<h2>Top Usuarios</h2> 
+			{% if usuarios|length > 0 %} 
+			<ol> 
+				{% for row in usuarios %} 
+				{% set usuario = row[0] %} 
+				{% set followersCount = row.followersCount %} 
+				<li> 
+					<p> 
+						<strong> <a href="{{ path('app_usuario_perfil', {id: usuario.id}) }}">{{ usuario.nombre }}</a> </strong> 
+					</p>
+					<span class="vote-number">{{ followersCount }}</span> 
+				</li> 
+			{% endfor %} 
+			</ol> 
+			{% else %} 
+				<p>No hay usuarios todavía.</p> 
+			{% endif %} 
+		</div> 
+</div> 
 {% endblock %}

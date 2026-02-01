@@ -236,11 +236,21 @@ final class PageController extends AbstractController
         $topPalabras = $palabraRepository->findTopByLikes(10, $startDate);
         $topUsuarios = $usuarioRepository->findTopUsersByFollowers(10, $startDate);
 
+        //Para calcular la barra que se va a rellenar con dependiendo del num de likes
+        $maxLikes = 1;
+        if(!empty($topPalabras)) {
+            $maxLikes = $topPalabras[0]['likesCount'];
+            if($maxLikes == 0) {
+                $maxLikes = 1;
+            }
+        }
+
         return $this->render('page/ranking.html.twig', [
             'palabras' => $topPalabras,
             'usuarios' => $topUsuarios,
             'period' => $period,
-            'debugDate' => $now // Pass current simulated date for UI context if needed
+            'debugDate' => $now, // Pass current simulated date for UI context if needed
+            'maxLikes' => $maxLikes
         ]);
     }
 
