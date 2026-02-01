@@ -89,7 +89,8 @@ final class PageController extends AbstractController
         $maxLikes = 1;
         if (!empty($topPalabras)) {
             $maxLikes = $topPalabras[0]['likesCount'];
-            if ($maxLikes == 0) $maxLikes = 1;
+            if ($maxLikes == 0)
+                $maxLikes = 1;
         }
         // -------------------------------
 
@@ -111,7 +112,7 @@ final class PageController extends AbstractController
             // I will fix the initial render to use correct monthly data too in the index method.
             'topWordsMonth' => $palabraRepository->findTopByLikes(5, (clone $this->timeService->getNow())->modify('-1 month'))
         ]);
-        }
+    }
 
     #[Route('/api/trending', name: 'api_trending')]
     public function trendingApi(PalabraRepository $palabraRepository): JsonResponse
@@ -120,13 +121,15 @@ final class PageController extends AbstractController
         $daily = $palabraRepository->findTopByLikes(3, (clone $now)->modify('-1 day'));
         $monthly = $palabraRepository->findTopByLikes(3, (clone $now)->modify('-1 month'));
 
-        $format = function($list) {
+        $format = function ($list) {
             $formatted = [];
             $max = 0;
             foreach ($list as $item) {
-                if ($item['likesCount'] > $max) $max = $item['likesCount'];
+                if ($item['likesCount'] > $max)
+                    $max = $item['likesCount'];
             }
-            if ($max == 0) $max = 1;
+            if ($max == 0)
+                $max = 1;
 
             foreach ($list as $item) {
                 $formatted[] = [
@@ -185,7 +188,8 @@ final class PageController extends AbstractController
         if ($request->isXmlHttpRequest() || $request->headers->get('Accept') === 'application/json') {
             $count = 0;
             foreach ($palabra->getValoraciones() as $v) {
-                if ($v->isLikeActiva()) $count++;
+                if ($v->isLikeActiva())
+                    $count++;
             }
             return $this->json([
                 'liked' => $valoracion->isLikeActiva(),
@@ -238,9 +242,9 @@ final class PageController extends AbstractController
 
         //Para calcular la barra que se va a rellenar con dependiendo del num de likes
         $maxLikes = 1;
-        if(!empty($topPalabras)) {
+        if (!empty($topPalabras)) {
             $maxLikes = $topPalabras[0]['likesCount'];
-            if($maxLikes == 0) {
+            if ($maxLikes == 0) {
                 $maxLikes = 1;
             }
         }
@@ -467,7 +471,7 @@ final class PageController extends AbstractController
             ->join('p.usuario', 'u')
             ->where('(p.palabra LIKE :q OR p.definicion LIKE :q)')
             ->andWhere('(u.isBlocked = :blocked OR u.isBlocked IS NULL)')
-            ->setParameter('q', '%'.$query.'%')
+            ->setParameter('q', '%' . $query . '%')
             ->setParameter('blocked', false)
             ->getQuery()
             ->getResult() : [];
@@ -476,7 +480,7 @@ final class PageController extends AbstractController
             ->createQueryBuilder('u')
             ->where('u.nombre LIKE :q')
             ->andWhere('(u.isBlocked = :blocked OR u.isBlocked IS NULL)')
-            ->setParameter('q', '%'.$query.'%')
+            ->setParameter('q', '%' . $query . '%')
             ->setParameter('blocked', false)
             ->getQuery()
             ->getResult() : [];

@@ -7,13 +7,23 @@
 	<!-- Difuminacion del fondo al darle click a publicar -->
 	<div id="blur" class="blur"></div>
 	
-	{# Calculamos el maxLikes para el topWords #}
-    {% set maxLikes = 0 %}
+	{# Calculamos el maxLikes para el topWords (Diario) #}
+    {% set maxLikesDaily = 0 %}
     {% for palabra in topWords %}
-        {% if palabra.likesCount > maxLikes %}
-            {% set maxLikes = palabra.likesCount %}
+        {% if palabra.likesCount > maxLikesDaily %}
+            {% set maxLikesDaily = palabra.likesCount %}
         {% endif %}
     {% endfor %}
+	{% if maxLikesDaily == 0 %} {% set maxLikesDaily = 1 %} {% endif %}
+
+	{# Calculamos el maxLikes para el topWordsMonth (Mensual) #}
+    {% set maxLikesMonthly = 0 %}
+    {% for palabra in topWordsMonth %}
+        {% if palabra.likesCount > maxLikesMonthly %}
+            {% set maxLikesMonthly = palabra.likesCount %}
+        {% endif %}
+    {% endfor %}
+	{% if maxLikesMonthly == 0 %} {% set maxLikesMonthly = 1 %} {% endif %}
 
 	<!-- Ranking diario -->
 	<div class="rank-container">
@@ -26,7 +36,7 @@
 						<span class="word-name">
 							<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}">{{ palabra.palabraEntity.palabra }}</a>
 						</span>
-						<div class="vote-bar" data-likes="{{ palabra.likesCount }}" data-max="{{ maxLikes }}">
+						<div class="vote-bar" data-likes="{{ palabra.likesCount }}" data-max="{{ maxLikesDaily }}">
 							<div class="fill"></div>
 						</div>
 						<span class="vote-number">{{ palabra.likesCount }}</span>
@@ -41,18 +51,18 @@
 			<h3>Tendencias del mes</h3>
 			<ol class="word-list" id="ranking-monthly">
 				<!--Limitaremos el top a 3 palabras-->
-				{% for palabra in topWords|slice(0,3) %}
+				{% for palabra in topWordsMonth|slice(0,3) %}
 					<li>
 						<span class="word-name">
 							<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}">{{ palabra.palabraEntity.palabra }}</a>
 						</span>
-						<div class="vote-bar" data-likes="{{ palabra.likesCount }}" data-max="{{ maxLikes }}">
+						<div class="vote-bar" data-likes="{{ palabra.likesCount }}" data-max="{{ maxLikesMonthly }}">
 							<div class="fill"></div>
 						</div>
 						<span class="vote-number">{{ palabra.likesCount }}</span>
 					</li>
 				{% else %}
-					<p>No hay tendencias hoy.</p>
+					<p>No hay tendencias este mes.</p>
 				{% endfor %}
 			</ol>
 		</div>
