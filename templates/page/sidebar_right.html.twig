@@ -11,7 +11,7 @@
 		<ul class="user-suggestions" id="user-suggestions">
 			{% for suggestionData in suggestedUsers %}
 				{% set suggestion = suggestionData[0] %}
-				<li>
+				{% if (app.user and suggestion.id != app.user.id) and (suggestion.id not in followingIds) %}				<li>
 					<img src="{{ suggestion.fotoPerfil ? asset('uploads/perfiles/' ~ suggestion.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ suggestion.nombre }}">
 					<div class="user-info-suggestion">
 						<span class="username">
@@ -27,6 +27,7 @@
 						</a>
 					{% endif %}
 				</li>
+				{% endif %}
 			{% else %}
 				<p>No hay sugerencias.</p>
 			{% endfor %}

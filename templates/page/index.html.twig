@@ -117,7 +117,7 @@
 				<!-- LIKE -->
 				<div class="action">
 					{% if app.user %}
-						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
+						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" class="ajax-like-form">
 							{% set liked = false %}
 							{% for v in palabra.valoraciones %}
 								{% if v.likeActiva and v.usuario == app.user %}

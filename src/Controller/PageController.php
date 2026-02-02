@@ -124,12 +124,11 @@ final class PageController extends AbstractController
         $format = function ($list) {
             $formatted = [];
             $max = 0;
+            // Calculamos el máximo real de esta lista para que las barras sean proporcionales
             foreach ($list as $item) {
-                if ($item['likesCount'] > $max)
-                    $max = $item['likesCount'];
+                if ($item['likesCount'] > $max) $max = $item['likesCount'];
             }
-            if ($max == 0)
-                $max = 1;
+            $max = $max > 0 ? $max : 1;
 
             foreach ($list as $item) {
                 $formatted[] = [
