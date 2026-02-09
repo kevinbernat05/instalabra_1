@@ -1,87 +1,128 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Perfil de
-	{{ usuario.nombre }}
-{% endblock %}
+{% block title %}{{ usuario.nombre }} - Instalabra{% endblock %}
 
 {% block body %}
-	<section class="foto-perfil">
-		<h2>{{ usuario.nombre }}</h2>
-		<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ usuario.nombre }}" width="150" height="150">
+<main class="feed">
+    <!-- HEADER DEL PERFIL PÚBLICO -->
+    <section class="foto-perfil">
+        <div class="profile-header">
+            <img class="profile-picture" 
+                 src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" 
+                 alt="Foto de {{ usuario.nombre }}">
+            <div class="profile-info">
+                <h2>{{ usuario.nombre }}</h2>
+                {% if usuario.biografia %}
+                    <p class="bio">{{ usuario.biografia }}</p>
+                {% else %}
+                    <p class="bio bio-empty">Este usuario aún no tiene biografía</p>
+                {% endif %}
+            </div>
+        </div>
 
-		<div>
-			<p>
-				<strong>Seguidores:</strong>
-				{{ followersCount }}
-				|
-				<strong>Seguidos:</strong>
-				{{ followingCount }}
-			</p>
-		</div>
+        <!-- ESTADÍSTICAS -->
+        <div class="profile-stats">
+            <div class="stat-item">
+                <strong>{{ palabras|length }}</strong>
+                <span>Palabras</span>
+            </div>
+            <div class="stat-item followers">
+                <strong>{{ followersCount }}</strong>
+                <span>Seguidores</span>
+            </div>
+            <div class="stat-item following">
+                <strong>{{ followingCount }}</strong>
+                <span>Seguidos</span>
+            </div>
+        </div>
 
-		{% if app.user and app.user != usuario %}
-			<div>
-				{% if isFollowing %}
-					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}" class="ajax-follow-link">
-						<button>Dejar de seguir</button>
-					</a>
-				{% else %}
-					<a href="{{ path('app_usuario_follow', {id: usuario.id}) }}" class="ajax-follow-link">
-						<button>Seguir</button>
-					</a>
-				{% endif %}
+        <!-- ACCIONES DEL PERFIL -->
+        {% if app.user and app.user != usuario %}
+            <div class="profile-actions">
+                {% if isFollowing %}
+                    <a href="{{ path('app_usuario_follow', {id: usuario.id}) }}" class="ajax-follow-link">
+                        <button class="btn-following">Siguiendo</button>
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_usuario_follow', {id: usuario.id}) }}" class="ajax-follow-link">
+                        <button class="btn-follow">Seguir</button>
+                    </a>
+                {% endif %}
+                
+                <a href="{{ path('app_chat_show', {id: usuario.id}) }}">
+                    <button class="btn-message">Enviar mensaje</button>
+                </a>
 
-				<a href="{{ path('app_chat_show', {id: usuario.id}) }}">
-					<button>Enviar mensaje</button>
-				</a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('admin_user_toggle_block', {id: usuario.id}) }}" class="ajax-follow-link">
+                        <button class="btn-admin {{ usuario.isBlocked ? 'btn-unblock' : 'btn-block' }}">
+                            {{ usuario.isBlocked ? '🔓 Desbloquear' : '🔒 Bloquear' }}
+                        </button>
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </section>
 
-				{% if is_granted('ROLE_ADMIN') %}
-					<a href="{{ path('admin_user_toggle_block', {id: usuario.id}) }}" class="btn {{ usuario.isBlocked ? 'btn-warning' : 'btn-danger' }}" style="text-decoration:none;">
-						<button style="background-color: {{ usuario.isBlocked ? '#ffcc00' : '#ff4444' }}; color: white; border: none;">
-							{{ usuario.isBlocked ? 'Desbloquear Usuario' : 'Bloquear Usuario' }}
-						</button>
-					</a>
-				{% endif %}
-			</div>
-		{% endif %}
-	</section>
+    <!-- TABS DE NAVEGACIÓN -->
+    <div class="profile-tabs">
+        <button class="tab-button active">Palabras</button>
+    </div>
 
-	<hr>
+    <!-- POSTS DEL USUARIO -->
+    <div class="profile-posts">
+        {% if palabras|length > 0 %}
+            {% for palabra in palabras %}
+                <section class="single_post">
+                    <div class="post_header">
+                        <div class="user_info">
+                            <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" 
+                                 alt="Foto de {{ usuario.nombre }}">
+                            <div class="user_details">
+                                <span class="user_name">{{ usuario.nombre }}</span>
+                                <small class="post_time">{{ palabra.fechaCreacion|date('d M Y · H:i') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post_content">
+                        <p class="palabra-title">
+                            <a href="{{ path('palabra_show', {id: palabra.id}) }}">{{ palabra.palabra }}</a>
+                        </p>
+                        <p class="palabra-definition">{{ palabra.definicion }}</p>
+                    </div>
 
-	<section class="palabras">
-		<h2>Palabras publicadas</h2>
+                    <div class="post-actions">
+                        <!-- LIKE -->
+                        <div class="action like-action">
+                            {% if app.user %}
+                                <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" class="ajax-like-form">
+                                    {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
+                                    <button type="submit" class="action-btn {{ liked ? 'liked' : '' }}">
+                                        <img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
+                                        <span class="count">{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</span>
+                                    </button>
+                                </form>
+                            {% else %}
+                                <img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
+                                <span class="count">{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</span>
+                            {% endif %}
+                        </div>
 
-		{% if palabras|length > 0 %}
-			{% for palabra in palabras %}
-				<div class="palabra">
-					<p>
-						<a href="{{ path('palabra_show', { id: palabra.id }) }}" class="palabra-link">
-							{{ palabra.palabra }}
-						</a>
-					</p>
-					<p>{{ palabra.definicion }}</p>
-					<small>{{ palabra.fechaCreacion|date('d/m/Y H:i') }}</small>
-
-					{% if app.user %}
-						<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post" class="ajax-like-form">
-							{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
-							<button type="submit">
-								{% if liked %}💖 Ya te gusta{% else %}👍 Like
-								{% endif %}
-							</button>
-						</form>
-
-						<button type="button" onclick="window.location.href='{{ path('palabra_show', { id: palabra.id }) }}'">
-							💬 Comentarios ({{ palabra.comentarios|length }})
-						</button>
-					{% else %}
-						<p>👍 Likes:
-							{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</p>
-					{% endif %}
-				</div>
-			{% endfor %}
-		{% else %}
-			<p>Este usuario no ha publicado ninguna palabra.</p>
-		{% endif %}
-	</section>
+                        <!-- COMENTARIOS -->
+                        <div class="action comment-action" onclick="window.location.href='{{ path('palabra_show', {id: palabra.id}) }}'">
+                            <img src="{{ asset('multimedia/comment.png') }}" alt="Comentar">
+                            <span class="count">{{ palabra.comentarios|length }}</span>
+                        </div>
+                    </div>
+                </section>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon"></div>
+                <p class="empty-title">{{ usuario.nombre }} aún no ha publicado palabras</p>
+                <p class="empty-subtitle">Cuando lo haga, aparecerán aquí</p>
+            </div>
+        {% endif %}
+    </div>
+</main>
 {% endblock %}
