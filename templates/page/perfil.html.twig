@@ -1,92 +1,120 @@
 {% extends 'base.html.twig' %}
-{% block title %}Mi Perfil - Instalabra
+{% block title %}Mi Perfil
 {% endblock %}
 
 {% block body %}
-	<main
-		class="feed">
-		<!-- FOTO DE PERFIL -->
+	<main class="feed">
+		<!-- Foto de perfil -->
 		<section class="foto-perfil">
-			<img class="profile-picture" src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ usuario.nombre }}">
-			<h2>{{ usuario.nombre }}</h2>
+			<div class="profile-header">
+				<img class="profile-picture" src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ usuario.nombre }}">			
+				<!-- Información del usuario -->
+				<div class="profile-info">
+					<h2>{{ usuario.nombre }}</h2>
+					{% if usuario.biografia %}
+						<p class="bio">
+							{{ usuario.biografia }}
+						</p>
+					{% endif %}
+				</div>
+			</div>
 
-			{% if usuario.biografia %}
-				<p class="bio">{{ usuario.biografia }}</p>
-			{% endif %}
+			<!-- Información adiccional del usuario -->
+			<div class="profile-stats">
+				<div class="stat-item">
+					<strong>{{ palabras|length }}</strong>
+					<span>Palabras</span>
+				</div>
 
-			<div class="follow-info">
-				<div class="followers">
+				<div class="stat-item followers">
 					<strong>{{ usuario.seguimientosQueRecibe|length }}</strong>
 					<span>Seguidores</span>
 				</div>
-				<div class="following">
+				<div class="stat-item following">
 					<strong>{{ usuario.seguimientosQueHace|length }}</strong>
 					<span>Seguidos</span>
 				</div>
 			</div>
 
+			<!-- Personalización del perfil del usuario -->
 			{% if app.user and app.user.id == usuario.id %}
-				<button onclick="window.location.href='{{ path('perfil_editar') }}'">Editar perfil</button>
+				<button class="btn-edit-profile" onclick="window.location.href='{{ path('perfil_editar') }}'">Editar perfil</button>
 			{% endif %}
 		</section>
 
-		<hr>
+		<div class="profile-tabs">
+			<button class="tab-button active">Mis Palabras</button>
+		</div>
 
-		<!-- POSTS DEL USUARIO -->
-		{% if palabras|length > 0 %}
-			{% for palabra in palabras %}
-				<section class="single_post">
-					<div class="post_header">
-						<div class="user_info">
-							<img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="Foto de {{ usuario.nombre }}">
-							<span>{{ usuario.nombre }}</span>
-							<small>·
-								{{ palabra.fechaCreacion|date('d M Y H:i') }}</small>
-						</div>
+		<!-- Posts del usuario -->
+		<div class="profile-posts">
+        {% if palabras|length > 0 %}
+            {% for palabra in palabras %}
+                <section class="single_post">
+                    <div class="post_header">
+                        <div class="user_info">
+                            <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" 
+                                 alt="Foto de {{ usuario.nombre }}">
+                            <div class="user_details">
+                                <span class="user_name">{{ usuario.nombre }}</span>
+                                <small class="post_time">{{ palabra.fechaCreacion|date('d M Y · H:i') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+					<div class="post_content">
+						<p class="palabra-title">
+							<a href="{{ path('palabra_show', {id: palabra.id}) }}">{{ palabra.palabra }}</a>
+						</p>
+						<p class="palabra-definition">{{ palabra.definicion }}</p>
 					</div>
 
-					<p>
-						<a href="{{ path('palabra_show', {id: palabra.id}) }}">{{ palabra.palabra }}</a>
-					</p>
-					<p>{{ palabra.definicion }}</p>
+					<!-- Acciones que se pueden realizar en los posts individuales -->
+					<div class="post-actions">
+						<!-- Like -->
+						<div class="action like-action">
+                            {% if app.user %}
+                                <form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
+                                    {% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
+                                    <button type="submit" class="action-btn {{ liked ? 'liked' : '' }}">
+                                        <img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
+                                        <span class="count">{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</span>
+                                    </button>
+                                </form>
+                            {% else %}
+                                <img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
+                                <span class="count">{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</span>
+                            {% endif %}
+                        </div>
 
-					<div
-						class="post-actions">
-						<!-- LIKE -->
-						<div class="action">
-							{% if app.user %}
-								<form action="{{ path('palabra_like_toggle', {'id': palabra.id}) }}" method="post">
-									{% set liked = palabra.valoraciones|filter(v => v.usuario.id == app.user.id and v.likeActiva)|length %}
-									<button type="submit">
-										<img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
-									</button>
-								</form>
-							{% else %}
-								<img src="{{ asset('multimedia/like.png') }}" alt="Me gusta">
-							{% endif %}
-							<span class="count">{{ palabra.valoraciones|filter(v => v.likeActiva)|length }}</span>
-						</div>
 
-						<!-- COMENTARIOS -->
-						<div class="action" onclick="window.location.href='{{ path('palabra_show', {id: palabra.id}) }}'">
-							<img src="{{ asset('multimedia/comment.png') }}" alt="Comentar">
-							<span class="count">{{ palabra.comentarios|length }}</span>
-						</div>
+						<!-- Comentarios -->
+						<div class="action comment-action" onclick="window.location.href='{{ path('palabra_show', {id: palabra.id}) }}'">
+                            <img src="{{ asset('multimedia/comment.png') }}" alt="Comentar">
+                            <span class="count">{{ palabra.comentarios|length }}</span>
+                        </div>
 
-						<!-- DELETE -->
+						<!-- Borrar comentario -->
 						{% if app.user and app.user == palabra.usuario %}
-							<div class="action">
-								<form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Eliminar?');">
-									<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
-									<button type="submit">&times;</button>
-								</form>
-							</div>
-						{% endif %}
-					</div>
-				</section>
-			{% endfor %}
-		{% else %}
-			<p>Aún no has publicado ninguna palabra.</p>
-		{% endif %}
-	</main>
+                            <div class="action delete-action">
+                                <form method="post" action="{{ path('palabra_delete', {id: palabra.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta palabra?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ palabra.id) }}">
+                                    <button type="submit" class="action-btn delete-btn">
+                                        <span class="delete-icon">×</span>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon"></div>
+                <p class="empty-title">Aún no has publicado ninguna palabra</p>
+                <p class="empty-subtitle">Comparte tu primera palabra con la comunidad</p>
+            </div>
+        {% endif %}
+    </div>
+</main>
 {% endblock %}
