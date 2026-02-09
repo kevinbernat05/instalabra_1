@@ -5,8 +5,26 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Instalabra JS loaded (Cleaned).");
-    // Mantener solo logica de UI si existe en menu.js u otros, 
-    // pero borrarmos la inyección de datos falsos.
+    
+    // Toggle Password Visibility
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('input');
+            const eyeOpen = this.querySelector('.eye-open');
+            const eyeClosed = this.querySelector('.eye-closed');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeOpen.style.display = 'block';
+                eyeClosed.style.display = 'none';
+            }
+        });
+    });
+
 });
 
 
@@ -52,9 +70,7 @@ function updateRankings() {
 
                 items.forEach(item => {
                     const li = document.createElement('li');
-
-                    // Logic to build LI
-                    // Check max likes for bar
+                    
                     const percentage = item.likes > 0 ? (item.likes / item.max) * 100 : 0;
 
                     li.innerHTML = `

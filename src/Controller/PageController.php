@@ -210,7 +210,7 @@ final class PageController extends AbstractController
 
         // Traer las palabras de este usuario ordenadas por fecha descendente
         $palabras = $palabraRepository->findBy(
-            ['usuario' => $usuario],
+            ['usuario' => $usuario, 'deletedAt' => null],
             ['fechaCreacion' => 'DESC']
         );
 
@@ -264,7 +264,7 @@ final class PageController extends AbstractController
         SeguimientoRepository $seguimientoRepository
     ): Response {
         $palabras = $palabraRepository->findBy(
-            ['usuario' => $usuario],
+            ['usuario' => $usuario, 'deletedAt' => null],
             ['fechaCreacion' => 'DESC']
         );
 
@@ -386,7 +386,7 @@ final class PageController extends AbstractController
         }
 
         // Redirigir a la home o perfil
-        return $this->redirectToRoute('app_home');
+        return $this->redirect($request->headers->get('referer'));
     }
 
     #[Route('/comentario/{id}/delete', name: 'comentario_delete', methods: ['POST'])]

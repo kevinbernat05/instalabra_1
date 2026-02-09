@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Nueva Contraseña</title>
+	</head>
+	<body>
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="flash-{{ label }}">
+					{{ message }}
+				</div>
+			{% endfor %}
+		{% endfor %}
+
+		<h2>Nueva Contraseña</h2>
+		<p>Ingresa tu nueva contraseña.</p>
+
+		<form action="{{ path('app_reset_password', {token: token}) }}" method="post">
+			<div>
+				<label for="password">Nueva Contraseña</label>
+				<input type="password" id="password" name="password" required autocomplete="new-password">
+			</div>
+			<br>
+			<div>
+				<label for="password_confirm">Confirmar Contraseña</label>
+				<input type="password" id="password_confirm" name="password_confirm" required autocomplete="new-password">
+			</div>
+			<br>
+			<button type="submit">Cambiar Contraseña</button>
+		</form>
+
+		<p>
+			<a href="{{ path('app_login') }}">Volver al inicio de sesión</a>
+		</p>
+	</body>
+</html>
