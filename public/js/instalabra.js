@@ -195,3 +195,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+// Modal para poder ver los followers y following de una persona
+function openFollowers() {
+    document.getElementById('followers-modal').style.display = 'flex';
+}
+
+function openFollowing() {
+    document.getElementById('following-modal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('followers-modal').style.display = 'none';
+    document.getElementById('following-modal').style.display = 'none';
+}

@@ -826,14 +826,25 @@ body {
 }
 
 .btn-edit-profile {
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+
   background-color: transparent;
-  border: 2px solid #d291ff !important;
+  border: 2px solid #d291ff;
   color: #d291ff;
+
+  transition: all 0.25s ease;
+
+  cursor: pointer;
 }
 
 .btn-edit-profile:hover {
-  background-color: rgba(210, 145, 255, 0.1);
-  transform: translateY(-1px);
+  background-color: rgba(210, 145, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(210, 145, 255, 0.25);
 }
 
 .btn-follow {
@@ -892,6 +903,195 @@ body {
 
 .btn-unblock:hover {
   background-color: #ffb700;
+}
+
+/* ================== MODAL DE FOLLOWERS ================== */
+/* Modal overlay centrado */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Contenido del modal */
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  padding: 20px 20px 10px 20px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease forwards;
+  text-align: center;
+}
+
+/* Animación del modal */
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Título*/
+.modal-content h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: #b26eff;
+  font-weight: 700;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e0d4f7;
+}
+
+/* Botón de cerrar */
+.close-modal {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #b26eff;
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: #ff1493;
+}
+
+/* Lista de usuarios dentro del modal */
+.modal-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+  padding: 0 5px;
+}
+
+.modal-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  transition: background 0.2s;
+  cursor: default;
+}
+
+.modal-user:hover {
+  background: rgba(178, 110, 255, 0.1);
+}
+
+.modal-user img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.modal-user a {
+  display: flex;
+  align-items: center; 
+  gap: 10px;
+  text-decoration: none; 
+  color: #0f1419; 
+  font-weight: 600;
+  font-size: 15px;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.modal-user a:hover {
+  color: #b26eff; 
+  transform: scale(1.02);
+}
+
+.modal-user a img {
+  flex-shrink: 0; 
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Botones seguir / dejar de seguir */
+.modal-user button {
+  padding: 6px 16px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+/* Botón seguir */
+.modal-user .btn-follow {
+  background-color: #d291ff;
+  color: white;
+}
+
+.modal-user .btn-follow:hover {
+  background-color: #b26eff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(178,110,255,0.3);
+}
+
+/* Botón dejar de seguir */
+.modal-user .btn-unfollow {
+  background-color: transparent;
+  border: 1px solid #d291ff;
+  color: #d291ff;
+}
+
+.modal-user .btn-unfollow:hover {
+  background-color: rgba(210,145,255,0.1);
+  color: #b26eff;
+  transform: translateY(-1px);
+}
+
+/* Estado vacío (sin usuarios) */
+.modal-list p.empty-subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-top: 20px;
+}
+
+/* Barra de busqueda dentro del modal*/
+.search-followers {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 50px;
+  border: 1px solid #dcdcdc;
+  background-color: #f7f7f7;
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.search-followers:focus {
+  outline: none;
+  border-color: #d291ff;
+  box-shadow: 0 0 8px rgba(178, 110, 255, 0.4);
+  background-color: #fff;
 }
 
 /* ================== NAVEGACION ================== */
