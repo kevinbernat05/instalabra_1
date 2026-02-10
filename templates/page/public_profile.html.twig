@@ -25,11 +25,11 @@
                 <strong>{{ palabras|length }}</strong>
                 <span>Palabras</span>
             </div>
-            <div class="stat-item followers">
+            <div class="stat-item followers" onclick="openFollowers()">
                 <strong>{{ followersCount }}</strong>
                 <span>Seguidores</span>
             </div>
-            <div class="stat-item following">
+            <div class="stat-item following" onclick="openFollowing()">
                 <strong>{{ followingCount }}</strong>
                 <span>Seguidos</span>
             </div>
@@ -124,5 +124,17 @@
             </div>
         {% endif %}
     </div>
+
+    <!--Ventana para ver los followers de la persona-->
+    {% include 'components/_followers.html.twig' with {
+        titulo: 'Seguidores',
+        lista: usuario.seguimientosQueRecibe|map(s => s.seguidor)
+    } %}
+
+    <!--Ventana para ver los following de la persona-->
+	{% include 'components/_following.html.twig' with {
+		titulo: 'Seguidos',
+		lista: usuario.seguimientosQueHace|map(s => s.seguido)
+	} %}
 </main>
 {% endblock %}
