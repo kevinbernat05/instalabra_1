@@ -18,7 +18,7 @@
 							<h5 class="mb-1">{{ contact.nombre }}</h5>
 							<!-- Assuming nombre exists on Usuario -->
 							<small class="text-muted">
-								{% if lastMsg.remitente == app.user %}
+								{% if lastMsg.remitente.id == app.user.id %}
 									Tú:
 								{% endif %}
 								{% if lastMsg.palabraCompartida %}

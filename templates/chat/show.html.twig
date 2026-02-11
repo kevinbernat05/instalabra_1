@@ -17,7 +17,7 @@
 			<div class="card mb-3">
 				<div class="card-body" style="height: 400px; overflow-y: auto; display: flex; flex-direction: column;">
 					{% for message in messages %}
-						{% set isMe = message.remitente == app.user %}
+						{% set isMe = message.remitente.id == app.user.id %}
 						<div class="d-flex {% if isMe %}justify-content-end{% else %}justify-content-start{% endif %} mb-2">
 							<div class="card {% if isMe %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 75%;">
 								<div class="card-body p-2">
