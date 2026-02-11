@@ -1,57 +1,173 @@
-{% extends 'base.html.twig' %} 
-{% block title %}Ranking de palabras {% endblock %} 
+{% extends 'base.html.twig' %}
+{% block title %}Ranking de Palabras - Instalabra{% endblock %}
 
-{% block body %} 
-<div class="navegation"> 
-	<a href="{{ path('app_ranking', {period: 'daily'}) }}" {% if period == 'daily' %} {% endif %}>Diario</a>  
-	<a href="{{ path('app_ranking', {period: 'weekly'}) }}" {% if period == 'weekly' %} {% endif %}>Semanal</a> 
-	<a href="{{ path('app_ranking', {period: 'monthly'}) }}" {% if period == 'monthly' %} {% endif %}>Mensual</a> 
-	<!-- | <a href="{{ path('app_ranking', {period: 'yearly'}) }}" {% if period == 'yearly' %} {% endif %}>Anual</a>--> </div> 
-	
-	<!--Ranking de palabras--> 
-	<div class="ranking-container"> 
-		<div> 
-			<h2>Top Palabras</h2> 
-			{% if palabras|length > 0 %} 
-			<ol> 
-				{% for row in palabras %} 
-				{% set palabra = row.palabraEntity %} 
-				{% set likesCount = row.likesCount %}  
-					<li> 
-						<p>  
-							{{ palabra.palabra }} 
-						</p> 
-						<div class="vote-bar" data-likes="{{ likesCount }}" data-max="{{ maxLikes }}"> 
-							<div class="fill"></div> 
-						</div> 
-						<span class="vote-number">{{ likesCount }}</span> 
-					</li> 
-				{% endfor %} 
-			</ol> 
-			{% else %} 
-				<p>No hay palabras aún.</p> 
-			{% endif %} 
-		</div> 
-		
-		<!--Ranking de usuarios--> 
-		<div> 
-			<h2>Top Usuarios</h2> 
-			{% if usuarios|length > 0 %} 
-			<ol> 
-				{% for row in usuarios %} 
-				{% set usuario = row[0] %} 
-				{% set followersCount = row.followersCount %} 
-				<li> 
-					<p> 
-						<strong> <a href="{{ path('app_usuario_perfil', {id: usuario.id}) }}">{{ usuario.nombre }}</a> </strong> 
-					</p>
-					<span class="vote-number">{{ followersCount }}</span> 
-				</li> 
-			{% endfor %} 
-			</ol> 
-			{% else %} 
-				<p>No hay usuarios todavía.</p> 
-			{% endif %} 
-		</div> 
-</div> 
+{% block body %}
+<main class="feed">
+    <!-- Header -->
+    <section class="ranking-header">
+        <div class="ranking-title">
+            <h1> Rankings</h1>
+            <p class="ranking-subtitle">Las palabras y usuarios más destacados</p>
+        </div>
+    </section>
+
+    <!-- Barra de navegación del tiempo -->
+    <div class="ranking-navigation">
+        <a href="{{ path('app_ranking', {period: 'daily'}) }}" 
+           class="period-tab {{ period == 'daily' ? 'active' : '' }}">
+            <span class="period-icon"></span>
+            <span class="period-label">Diario</span>
+        </a>
+        <a href="{{ path('app_ranking', {period: 'weekly'}) }}" 
+           class="period-tab {{ period == 'weekly' ? 'active' : '' }}">
+            <span class="period-icon"></span>
+            <span class="period-label">Semanal</span>
+        </a>
+        <a href="{{ path('app_ranking', {period: 'monthly'}) }}" 
+           class="period-tab {{ period == 'monthly' ? 'active' : '' }}">
+            <span class="period-icon"></span>
+            <span class="period-label">Mensual</span>
+        </a>
+        <!--
+        <a href="{{ path('app_ranking', {period: 'yearly'}) }}" 
+           class="period-tab {{ period == 'yearly' ? 'active' : '' }}">
+            <span class="period-icon"></span>
+            <span class="period-label">Anual</span>
+        </a>
+        -->
+    </div>
+
+    <!-- Ranking de palabras -->
+    <div class="ranking-container">
+		<div class="ranking-card">
+            <div class="ranking-card-header">
+                <h2>
+                    <span class="rank-icon"></span>
+                    Top Palabras
+                </h2>
+                <span class="rank-badge">
+                    {% if period == 'daily' %}Hoy
+                    {% elseif period == 'weekly' %}Esta semana
+                    {% elseif period == 'monthly' %}Este mes
+                    {% else %}Este año
+                    {% endif %}
+                </span>
+            </div>
+            
+            {% if palabras|length > 0 %}
+                <ol class="ranking-list">
+                    {% for row in palabras %}
+                        {% set palabra = row.palabraEntity %}
+                        {% set likesCount = row.likesCount %}
+                        {% set position = loop.index %}
+                        
+                        <li class="ranking-item" data-position="{{ position }}">
+                            <div class="rank-position">
+                                {% if position == 1 %}
+                                    <span class="medal gold"></span>
+                                {% elseif position == 2 %}
+                                    <span class="medal silver"></span>
+                                {% elseif position == 3 %}
+                                    <span class="medal bronze"></span>
+                                {% else %}
+                                    <span class="rank-number">{{ position }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="rank-content">
+                                <div class="rank-info">
+                                    <a href="{{ path('palabra_show', {id: palabra.id}) }}" class="palabra-link">
+                                        {{ palabra.palabra }}
+                                    </a>
+                                    <p class="palabra-preview">{{ palabra.definicion|slice(0, 60) }}{% if palabra.definicion|length > 60 %}...{% endif %}</p>
+                                </div>
+                                
+                                <div class="rank-stats">
+                                    <div class="vote-bar-container">
+                                        <div class="vote-bar" data-likes="{{ likesCount }}" data-max="{{ maxLikes }}">
+                                            <div class="fill" style="width: {{ maxLikes > 0 ? (likesCount / maxLikes * 100) : 0 }}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="vote-count">
+                                        <img src="{{ asset('multimedia/like.png') }}" alt="Likes" class="vote-icon">
+                                        <span class="vote-number">{{ likesCount }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <div class="ranking-empty">
+                    <div class="empty-icon"></div>
+                    <p class="empty-title">No hay palabras aún</p>
+                    <p class="empty-subtitle">Sé el primero en publicar una palabra</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Ranking de usuarios -->
+        <div class="ranking-card">
+            <div class="ranking-card-header">
+                <h2>
+                    <span class="rank-icon"></span>
+                    Top Usuarios
+                </h2>
+                <span class="rank-badge">
+                    {% if period == 'daily' %}Hoy
+                    {% elseif period == 'weekly' %}Esta semana
+                    {% elseif period == 'monthly' %}Este mes
+                    {% else %}Este año
+                    {% endif %}
+                </span>
+            </div>
+            
+            {% if usuarios|length > 0 %}
+                <ol class="ranking-list">
+                    {% for row in usuarios %}
+                        {% set usuario = row[0] %}
+                        {% set followersCount = row.followersCount %}
+                        {% set position = loop.index %}
+                        
+                        <li class="ranking-item user-item" data-position="{{ position }}">
+                            <div class="rank-position">
+                                {% if position == 1 %}
+                                    <span class="medal gold"></span>
+                                {% elseif position == 2 %}
+                                    <span class="medal silver"></span>
+                                {% elseif position == 3 %}
+                                    <span class="medal bronze"></span>
+                                {% else %}
+                                    <span class="rank-number">{{ position }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="rank-content user-content">
+                                <div class="user-rank-info">
+                                    <img src="{{ usuario.fotoPerfil ? asset('uploads/perfiles/' ~ usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" 
+                                         alt="{{ usuario.nombre }}" 
+                                         class="user-avatar">
+                                    <a href="{{ path('app_usuario_perfil', {id: usuario.id}) }}" class="user-link">
+                                        {{ usuario.nombre }}
+                                    </a>
+                                </div>
+                                
+                                <div class="followers-count">
+                                    <span class="followers-icon"></span>
+                                    <span class="followers-number">{{ followersCount }}</span>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <div class="ranking-empty">
+                    <div class="empty-icon"></div>
+                    <p class="empty-title">No hay usuarios todavía</p>
+                    <p class="empty-subtitle">Sé parte de la comunidad</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
 {% endblock %}
