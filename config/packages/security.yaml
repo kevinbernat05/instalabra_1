@@ -1,25 +1,26 @@
 security:
-    password_hashers:
-        App\Entity\Usuario:
-            algorithm: auto
+  password_hashers:
+    App\Entity\Usuario:
+      algorithm: auto
 
-    providers:
-        app_user_provider:
-            entity:
-                class: App\Entity\Usuario
-                property: email
+  providers:
+    app_user_provider:
+      entity:
+        class: App\Entity\Usuario
+        property: email
 
-    firewalls:
-        main:
-            lazy: true
-            provider: app_user_provider
-            user_checker: App\Security\UserChecker
-            form_login:
-                login_path: app_login
-                check_path: app_login
-            logout:
-                path: app_logout
-                target: /
+  firewalls:
+    main:
+      lazy: true
+      provider: app_user_provider
+      user_checker: App\Security\UserChecker
+      form_login:
+        login_path: app_login
+        check_path: app_login
+      custom_authenticator: App\Security\GoogleAuthenticator
+      logout:
+        path: app_logout
+        target: /
 
-    access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }
+  access_control:
+    - { path: ^/admin, roles: ROLE_ADMIN }
