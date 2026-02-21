@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% block title %}Explorar{% endblock %}
+{% block body %}
+
+<div class="explorar-header">
+    <h1 class="explorar-titulo">Explorar</h1>
+    <p class="explorar-subtitulo">Descubre las palabras más populares</p>
+</div>
+
+<div class="explorar-grid">
+    {% set palabras_ordenadas = palabras|sort((a, b) =>
+        b.valoraciones|filter(v => v.likeActiva)|length -
+        a.valoraciones|filter(v => v.likeActiva)|length
+    ) %}
+
+    {% for palabra in palabras_ordenadas %}
+        {% set likes = palabra.valoraciones|filter(v => v.likeActiva)|length %}
+        <a href="{{ path('palabra_show', {id: palabra.id}) }}" class="explorar-card">
+            <div class="explorar-card-top">
+                <h2 class="explorar-card-palabra">{{ palabra.palabra }}</h2>
+                <p class="explorar-card-definicion">{{ palabra.definicion|slice(0, 80) }}{% if palabra.definicion|length > 80 %}...{% endif %}</p>
+            </div>
+            <div class="explorar-card-bottom">
+                <div class="explorar-card-autor">
+                    <img src="{{ palabra.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ palabra.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}"
+                         alt="{{ palabra.usuario.nombre }}"
+                         class="explorar-card-avatar">
+                    <span class="explorar-card-nombre">{{ palabra.usuario.nombre }}</span>
+                </div>
+                <span class="explorar-card-likes"> {{ likes }}</span>
+            </div>
+        </a>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon"></span>
+            <p class="empty-title">No hay palabras aún</p>
+            <p class="empty-subtitle">¡Sé el primero en publicar!</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

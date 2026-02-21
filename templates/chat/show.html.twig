@@ -1,72 +1,91 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Chat con
-	{{ otherUser.nombre }}
-{% endblock %}
-
+{% block title %}Chat con {{ otherUser.nombre }}{% endblock %}
 {% block body %}
-	<div class="row">
-		<div class="col-md-8 offset-md-2">
-			<div class="d-flex justify-content-between align-items-center mb-3">
-				<h3>
-					<a href="{{ path('app_usuario_perfil', {id: otherUser.id}) }}" class="text-decoration-none text-dark">{{ otherUser.nombre }}</a>
-				</h3>
-				<a href="{{ path('app_chat_index') }}" class="btn btn-outline-secondary btn-sm">Volver</a>
-			</div>
 
-			<div class="card mb-3">
-				<div class="card-body" style="height: 400px; overflow-y: auto; display: flex; flex-direction: column;">
-					{% for message in messages %}
-						{% set isMe = message.remitente.id == app.user.id %}
-						<div class="d-flex {% if isMe %}justify-content-end{% else %}justify-content-start{% endif %} mb-2">
-							<div class="card {% if isMe %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 75%;">
-								<div class="card-body p-2">
-									{% if message.palabraCompartida %}
-										{% set sharedPost = message.palabraCompartida %}
-										<div class="card mb-2 text-dark" style="font-size: 0.9em; overflow: hidden; border-radius: 12px; border: 1px solid #eee;">
-											<a href="{{ path('palabra_show', {id: sharedPost.id}) }}" class="text-decoration-none text-dark">
-												<div class="card-header bg-light p-2 d-flex align-items-center" style="border-bottom: 1px solid #eee;">
-													<img src="{{ sharedPost.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ sharedPost.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ sharedPost.usuario.nombre }}" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 8px; object-fit: cover;">
-													<strong>{{ sharedPost.usuario.nombre }}</strong>
-												</div>
-												<div class="card-body p-2">
-													<p class="mb-1" style="font-weight: 500;">{{ sharedPost.palabra }}</p>
-													<p class="mb-0 text-muted small text-truncate" style="max-width: 200px;">{{ sharedPost.definicion }}</p>
-												</div>
-											</a>
-										</div>
-									{% endif %}
+<!-- Header del chat -->
+<div class="chat-header">
+    <a href="{{ path('app_chat_index') }}" class="chat-back">‹</a>
+    <a href="{{ path('app_usuario_perfil', {id: otherUser.id}) }}" class="chat-header-user">
+        <img src="{{ otherUser.fotoPerfil ? asset('uploads/perfiles/' ~ otherUser.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}"
+             alt="{{ otherUser.nombre }}"
+             class="chat-header-avatar">
+        <div class="chat-header-info">
+            <span class="chat-header-nombre">{{ otherUser.nombre }}</span>
+            <span class="chat-header-estado">Ver perfil</span>
+        </div>
+    </a>
+</div>
 
-									{% if message.contenido %}
-										<p class="mb-0">{{ message.contenido }}</p>
-									{% endif %}
-									<small class="{% if isMe %}text-white-50{% else %}text-muted{% endif %}" style="font-size: 0.7em;">
-										{{ message.fechaEnvio|date('H:i') }}
-									</small>
-								</div>
-							</div>
-						</div>
-					{% else %}
-						<p class="text-center text-muted mt-5">Di hola a
-							{{ otherUser.nombre }}
-							👋</p>
-					{% endfor %}
-				</div>
-				<div class="card-footer">
-					<form action="{{ path('app_chat_send', {id: otherUser.id}) }}" method="post" class="d-flex">
-						<input type="text" name="content" class="form-control me-2" placeholder="Escribe un mensaje..." required autofocus>
-						<button type="submit" class="btn btn-primary">Enviar</button>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+<!-- Mensajes -->
+<div class="chat-mensajes" id="chat-mensajes">
+    {% for message in messages %}
+        {% set isMe = message.remitente.id == app.user.id %}
 
-	<script>
-		// Scroll to bottom
-const chatContainer = document.querySelector('.card-body[style*="overflow-y"]');
-if (chatContainer) {
-chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-	</script>
+        <div class="mensaje-fila {{ isMe ? 'mensaje-mio' : 'mensaje-suyo' }}">
+
+            {% if not isMe %}
+                <img src="{{ message.remitente.fotoPerfil ? asset('uploads/perfiles/' ~ message.remitente.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}"
+                     alt="{{ message.remitente.nombre }}"
+                     class="mensaje-avatar">
+            {% endif %}
+
+            <div class="mensaje-burbuja {{ isMe ? 'burbuja-mia' : 'burbuja-suya' }}">
+
+                {% if message.palabraCompartida %}
+                    {% set sharedPost = message.palabraCompartida %}
+                    <a href="{{ path('palabra_show', {id: sharedPost.id}) }}" class="mensaje-compartido">
+                        <div class="compartido-header">
+                            <img src="{{ sharedPost.usuario.fotoPerfil ? asset('uploads/perfiles/' ~ sharedPost.usuario.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}"
+                                 alt="{{ sharedPost.usuario.nombre }}"
+                                 class="compartido-avatar">
+                            <span class="compartido-autor">{{ sharedPost.usuario.nombre }}</span>
+                        </div>
+                        <div class="compartido-body">
+                            <p class="compartido-palabra">{{ sharedPost.palabra }}</p>
+                            <p class="compartido-definicion">{{ sharedPost.definicion|slice(0, 60) }}{% if sharedPost.definicion|length > 60 %}...{% endif %}</p>
+                        </div>
+                    </a>
+                {% endif %}
+
+                {% if message.contenido %}
+                    <p class="mensaje-texto">{{ message.contenido }}</p>
+                {% endif %}
+
+                <span class="mensaje-hora">{{ message.fechaEnvio|date('H:i') }}</span>
+            </div>
+
+        </div>
+
+    {% else %}
+        <div class="chat-vacio">
+            <span class="chat-vacio-emoji"></span>
+            <p class="chat-vacio-texto">Di hola a <strong>{{ otherUser.nombre }}</strong></p>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Input de mensaje -->
+<div class="chat-input-wrapper">
+    <form action="{{ path('app_chat_send', {id: otherUser.id}) }}" method="post" class="chat-form">
+        <input type="text"
+               name="content"
+               class="chat-input"
+               placeholder="Escribe un mensaje..."
+               required
+               autofocus
+               autocomplete="off">
+        <button type="submit" class="chat-send-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </form>
+</div>
+
+<script>
+    const chatContainer = document.getElementById('chat-mensajes');
+    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+</script>
+
 {% endblock %}

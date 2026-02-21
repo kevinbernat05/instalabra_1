@@ -336,6 +336,17 @@ final class PageController extends AbstractController
         return $this->redirect($request->headers->get('referer'));
     }
 
+    #[Route('/explorar', name: 'app_explorar')]
+    public function explorar(PalabraRepository $palabraRepository): Response
+    {
+        $palabras = $palabraRepository->findAll();
+
+        return $this->render('page/explorar.html.twig', [
+            'palabras' => $palabras,
+        ]);
+    }
+
+
     #[Route('/palabra/{id}/comentar', name: 'palabra_comentar', methods: ['POST'])]
     public function comentar(Palabra $palabra, Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {

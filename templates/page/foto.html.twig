@@ -1,25 +1,66 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar perfil</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Editar perfil</h1>
-        <nav>
-            <a href="{{ path('app_perfil') }}">Volver al perfil</a>
-        </nav>
-    </header>
+{% extends 'base.html.twig' %}
+{% block title %}Editar perfil{% endblock %}
+{% block body %}
 
-    <main>
-        <h2>Subir o cambiar foto de perfil</h2>
+<div class="editar-header">
+    <a href="{{ path('app_perfil') }}" class="editar-back">‹</a>
+    <h1 class="editar-titulo">Editar perfil</h1>
+</div>
 
-        {{ form_start(form, {'attr': {'enctype':'multipart/form-data'}}) }}
-            {{ form_row(form.fotoPerfil) }}
-            <button type="submit">Guardar foto</button>
-        {{ form_end(form) }}
-    </main>
-</body>
-</html>
+<div class="editar-perfil">
+
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'class': 'editar-form'}}) }}
+
+        <div class="editar-foto-section">
+            <div class="editar-foto-preview-wrapper">
+                <img src="{{ app.user.fotoPerfil ? asset('uploads/perfiles/' ~ app.user.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}"
+                     alt="Foto de perfil"
+                     class="editar-foto-preview"
+                     id="foto-preview">
+                <label for="{{ form.fotoPerfil.vars.id }}" class="editar-foto-overlay">
+                    <span class="editar-foto-icon"></span>
+                    <span class="editar-foto-texto">Cambiar foto</span>
+                </label>
+            </div>
+            <div style="display:none;">
+                {{ form_widget(form.fotoPerfil) }}
+            </div>
+        </div>
+
+        <div class="editar-campos">
+
+            <div class="editar-campo">
+                <label class="editar-label">Nombre</label>
+                {{ form_widget(form.nombre, {'attr': {'class': 'editar-input', 'placeholder': 'Tu nombre'}}) }}
+                {{ form_errors(form.nombre) }}
+            </div>
+
+            {% if form.bio is defined %}
+            <div class="editar-campo editar-bio">
+                <label class="editar-label">Biografía</label>
+                {{ form_label(form.bio, 'Biografía', {'label_attr': {'class': 'editar-label editar-bio-label'}}) }}
+                {{ form_widget(form.bio, {'attr': {'class': 'editar-input editar-textarea', 'placeholder': 'Cuéntanos algo sobre ti...', 'rows': 3}}) }}
+                {{ form_errors(form.bio) }}
+            </div>
+            {% endif %}
+
+            {% if form.email is defined %}
+            <div class="editar-campo">
+                <label class="editar-label">Email</label>
+                {{ form_widget(form.email, {'attr': {'class': 'editar-input', 'placeholder': 'tu@email.com'}}) }}
+                {{ form_errors(form.email) }}
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div class="editar-actions">
+            <a href="{{ path('app_perfil') }}" class="editar-cancelar">Cancelar</a>
+            <button type="submit" class="editar-guardar">Guardar cambios</button>
+        </div>
+
+    {{ form_end(form) }}
+
+</div>
+
+{% endblock %}
