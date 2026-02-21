@@ -20,7 +20,7 @@
 			{% if palabras|length > 0 %}
 				<ol>
 					{% for row in palabras %}
-						{% set palabra = row[0] %}
+						{% set palabra = row.palabraEntity %}
 						{% set likesCount = row.likesCount %}
 						<li>
 							<p>
