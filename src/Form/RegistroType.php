@@ -16,7 +16,14 @@ class RegistroType extends AbstractType
         $builder
             ->add('nombre', TextType::class)
             ->add('email', EmailType::class)
-            ->add('password', PasswordType::class);
+            ->add('password', \Symfony\Component\Form\Extension\Core\Type\RepeatedType::class, [
+                'type' => PasswordType::class,
+                'invalid_message' => 'Las contraseñas deben coincidir.',
+                'options' => ['attr' => ['class' => 'password-field']],
+                'required' => true,
+                'first_options'  => ['label' => 'Contraseña'],
+                'second_options' => ['label' => 'Confirmar Contraseña'],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

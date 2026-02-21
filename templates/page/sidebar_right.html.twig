@@ -1,26 +1,8 @@
 <div class="menu-bar-right">
 	<div class="search-box">
-		<input type="text" placeholder="Buscar">
-	</div>
-
-	<!-- Ranking diario de las palabras mas valoradas del dia -->
-	<div class="rank-diary box">
-		<h3>Palabras del día</h3>
-		<ol class="word-list" id="word-list">
-			{% for palabra in topWords %}
-				<li>
-					<span class="word-name">
-						<a href="{{ path('palabra_show', {id: palabra.palabraEntity.id}) }}" style="color:inherit; text-decoration:none;">{{ palabra.palabraEntity.palabra }}</a>
-					</span>
-					<div class="vote-bar">
-						<div class="fill" style="width: {{ (palabra.likesCount / maxLikes * 100)|round }}%;"></div>
-						<span class="vote-number">{{ palabra.likesCount }}</span>
-					</div>
-				</li>
-			{% else %}
-				<p>No hay datos hoy.</p>
-			{% endfor %}
-		</ol>
+		<form action="{{ path('app_search') }}" method="GET" class="search-form">
+			<input type="text" name="q" placeholder="Buscar" value="{{ app.request.query.get('q') }}">
+		</form>
 	</div>
 
 	<!-- Sugerencias de usuarios a seguir -->
@@ -29,18 +11,24 @@
 		<ul class="user-suggestions" id="user-suggestions">
 			{% for suggestionData in suggestedUsers %}
 				{% set suggestion = suggestionData[0] %}
-				<li>
-					<img src="{{ suggestion.fotoPerfil ? asset('uploads/perfiles/' ~ suggestion.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ suggestion.nombre }}">
-					<div class="user-info-suggestion">
-						<span class="username">{{ suggestion.nombre }}</span>
-						{# <span class="handle">{{ suggestion.email }}</span> #}
-					</div>
-					{% if app.user and app.user != suggestion and suggestion.id not in followingIds %}
-						<a href="{{ path('app_usuario_follow', {id: suggestion.id}) }}">
-							<button>Seguir</button>
-						</a>
-					{% endif %}
-				</li>
+				{% if (app.user and suggestion.id != app.user.id) and (suggestion.id not in followingIds) %}
+					<li>
+						<img src="{{ suggestion.fotoPerfil ? asset('uploads/perfiles/' ~ suggestion.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ suggestion.nombre }}">
+						<div class="user-info-suggestion">
+							<span class="username">
+								<a href="{{ path('app_usuario_perfil', {id: suggestion.id}) }}" style="text-decoration: none; color: inherit;">
+									{{ suggestion.nombre }}
+								</a>
+							</span>
+							{# <span class="handle">{{ suggestion.email }}</span> #}
+						</div>
+						{% if app.user and app.user != suggestion and suggestion.id not in followingIds %}
+							<a href="{{ path('app_usuario_follow', {id: suggestion.id}) }}" class="ajax-follow-link">
+								<button>Seguir</button>
+							</a>
+						{% endif %}
+					</li>
+				{% endif %}
 			{% else %}
 				<p>No hay sugerencias.</p>
 			{% endfor %}

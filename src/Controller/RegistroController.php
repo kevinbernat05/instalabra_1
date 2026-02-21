@@ -41,9 +41,15 @@ class RegistroController extends AbstractController
     }
 
     #[Route('/login', name:'app_login')]
-    public function login(): Response
+    public function login(\Symfony\Component\Security\Http\Authentication\AuthenticationUtils $authenticationUtils): Response
     {
-        return $this->render('security/login.html.twig', []);
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        return $this->render('security/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error
+        ]);
     }
 
     #[Route('/logout', name:'app_logout')]

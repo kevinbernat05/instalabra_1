@@ -1,0 +1,25 @@
+<div id="followers-modal" class="modal">
+  <div class="modal-content">
+    <h3>{{ titulo }}</h3>
+    <button class="close-modal" onclick="closeModal()">×</button>
+
+     <!-- Buscador -->
+    <input type="text" class="search-followers" placeholder="Buscar seguidores...">
+
+    <div class="modal-list">
+      {% for seguimiento in lista %}
+        <div class="modal-user">
+          <a href="{{ path('app_usuario_perfil', {id: seguimiento.id}) }}">
+              <img src="{{ seguimiento.fotoPerfil ? asset('uploads/perfiles/' ~ seguimiento.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ seguimiento.nombre }}">
+              <span>{{ seguimiento.nombre }}</span>
+          </a>
+          <button class="btn-follow">
+              Seguir
+          </button>
+      </div>
+      {% else %}
+          <p class="empty-subtitle">Este usuario aún no tiene seguidores</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>

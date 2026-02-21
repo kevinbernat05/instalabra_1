@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h1>Admin Dashboard</h1>
+
+		<a href="{{ path('admin_trash_index') }}" class="btn btn-outline-danger mt-3 mb-3">🗑️ Papelera de Reciclaje</a>
+
+		<h2 class="mt-4">Users</h2>
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Roles</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for user in users %}
+						<tr>
+							<td>{{ user.id }}</td>
+							<td>{{ user.nombre }}</td>
+							<td>{{ user.email }}</td>
+							<td>{{ user.roles|join(', ') }}</td>
+							<td>
+								{% if user.isBlocked %}
+									<span class="badge bg-danger">Blocked</span>
+								{% else %}
+									<span class="badge bg-success">Active</span>
+								{% endif %}
+							</td>
+							<td>
+								<a href="{{ path('admin_user_toggle_block', {id: user.id}) }}" class="btn btn-sm {{ user.isBlocked ? 'btn-warning' : 'btn-danger' }}">
+									{{ user.isBlocked ? 'Unblock' : 'Block' }}
+								</a>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+{% endblock %}
+
+{% block right_sidebar %}
+	<!-- Sidebar hidden in admin view -->
+{% endblock %}

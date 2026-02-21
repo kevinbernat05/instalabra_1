@@ -13,40 +13,40 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UsuarioRepository::class)]
 class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type:"integer")]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\Column(type:"string", length:255)]
+    #[ORM\Column(type: "string", length: 255)]
     private string $nombre;
 
-    #[ORM\Column(type:"string", length:255, unique:true)]
+    #[ORM\Column(type: "string", length: 255, unique: true)]
     private string $email;
 
-    #[ORM\Column(type:"string")]
+    #[ORM\Column(type: "string")]
     private string $password;
 
-    #[ORM\Column(type:"datetime")]
+    #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $fechaRegistro;
 
-    #[ORM\Column(type:"text", nullable:true)]
+    #[ORM\Column(type: "text", nullable: true)]
     private ?string $biografia;
 
-    #[ORM\Column(type:"string", length:255, nullable:true)]
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $fotoPerfil = null;
 
-    #[ORM\OneToMany(mappedBy:"usuario", targetEntity:Palabra::class)]
+    #[ORM\OneToMany(mappedBy: "usuario", targetEntity: Palabra::class)]
     private Collection $palabras;
 
-    #[ORM\OneToMany(mappedBy:"usuario", targetEntity:Comentario::class)]
+    #[ORM\OneToMany(mappedBy: "usuario", targetEntity: Comentario::class)]
     private Collection $comentarios;
 
-    #[ORM\OneToMany(mappedBy:"usuario", targetEntity:Valoracion::class)]
+    #[ORM\OneToMany(mappedBy: "usuario", targetEntity: Valoracion::class)]
     private Collection $valoraciones;
 
-    #[ORM\OneToMany(mappedBy:"seguidor", targetEntity:Seguimiento::class)]
+    #[ORM\OneToMany(mappedBy: "seguidor", targetEntity: Seguimiento::class)]
     private Collection $seguimientosQueHace;
 
-    #[ORM\OneToMany(mappedBy:"seguido", targetEntity:Seguimiento::class)]
+    #[ORM\OneToMany(mappedBy: "seguido", targetEntity: Seguimiento::class)]
     private Collection $seguimientosQueRecibe;
 
     public function getPassword(): string
@@ -72,29 +72,94 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getNombre(): ?string {
-    return $this->nombre;
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
     }
 
-    public function setNombre(string $nombre): self {
+    public function setNombre(string $nombre): self
+    {
         $this->nombre = $nombre;
         return $this;
     }
 
-    public function getEmail(): ?string {
+    public function getEmail(): ?string
+    {
         return $this->email;
     }
 
-    public function setEmail(string $email): self {
+    public function setEmail(string $email): self
+    {
         $this->email = $email;
         return $this;
     }
 
-    public function getRoles(): array { return ['ROLE_USER']; }
-    public function eraseCredentials(): void {}
-    public function getUserIdentifier(): string { return $this->email; }
+    #[ORM\Column(type: "json", nullable: true)]
+    private ?array $roles = [];
 
-    public function __construct() {
+    #[ORM\Column(type: "boolean", nullable: true, options: ["default" => false])]
+    private ?bool $isBlocked = false;
+
+    #[ORM\Column(type: "string", length: 100, nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $resetTokenExpiresAt = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $googleId = null;
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): self
+    {
+        $this->resetToken = $resetToken;
+        return $this;
+    }
+
+    public function getResetTokenExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->resetTokenExpiresAt;
+    }
+
+    public function setResetTokenExpiresAt(?\DateTimeInterface $resetTokenExpiresAt): self
+    {
+        $this->resetTokenExpiresAt = $resetTokenExpiresAt;
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles ?? [];
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function __construct()
+    {
         $this->palabras = new ArrayCollection();
         $this->comentarios = new ArrayCollection();
         $this->valoraciones = new ArrayCollection();
@@ -117,7 +182,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         $this->fotoPerfil = $fotoPerfil;
         return $this;
     }
-        /**
+    /**
      * @return Collection<int, Seguimiento>
      */
     public function getSeguimientosQueHace(): Collection
@@ -140,6 +205,28 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     public function setBiografia(?string $biografia): self
     {
         $this->biografia = $biografia;
+        return $this;
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->isBlocked ?? false;
+    }
+
+    public function setIsBlocked(bool $isBlocked): self
+    {
+        $this->isBlocked = $isBlocked;
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): self
+    {
+        $this->googleId = $googleId;
         return $this;
     }
 }
