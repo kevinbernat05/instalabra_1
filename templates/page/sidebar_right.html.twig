@@ -1,7 +1,7 @@
 <div class="menu-bar-right">
 	<div class="search-box">
 		<form action="{{ path('app_search') }}" method="GET" class="search-form">
-			<input type="text" name="q" placeholder="Buscar">
+			<input type="text" name="q" placeholder="Buscar" value="{{ app.request.query.get('q') }}">
 		</form>
 	</div>
 
@@ -11,22 +11,23 @@
 		<ul class="user-suggestions" id="user-suggestions">
 			{% for suggestionData in suggestedUsers %}
 				{% set suggestion = suggestionData[0] %}
-				{% if (app.user and suggestion.id != app.user.id) and (suggestion.id not in followingIds) %}				<li>
-					<img src="{{ suggestion.fotoPerfil ? asset('uploads/perfiles/' ~ suggestion.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ suggestion.nombre }}">
-					<div class="user-info-suggestion">
-						<span class="username">
-							<a href="{{ path('app_usuario_perfil', {id: suggestion.id}) }}" style="text-decoration: none; color: inherit;">
-								{{ suggestion.nombre }}
+				{% if (app.user and suggestion.id != app.user.id) and (suggestion.id not in followingIds) %}
+					<li>
+						<img src="{{ suggestion.fotoPerfil ? asset('uploads/perfiles/' ~ suggestion.fotoPerfil) : asset('multimedia/Prueba/noicon.jpg') }}" alt="{{ suggestion.nombre }}">
+						<div class="user-info-suggestion">
+							<span class="username">
+								<a href="{{ path('app_usuario_perfil', {id: suggestion.id}) }}" style="text-decoration: none; color: inherit;">
+									{{ suggestion.nombre }}
+								</a>
+							</span>
+							{# <span class="handle">{{ suggestion.email }}</span> #}
+						</div>
+						{% if app.user and app.user != suggestion and suggestion.id not in followingIds %}
+							<a href="{{ path('app_usuario_follow', {id: suggestion.id}) }}" class="ajax-follow-link">
+								<button>Seguir</button>
 							</a>
-						</span>
-						{# <span class="handle">{{ suggestion.email }}</span> #}
-					</div>
-					{% if app.user and app.user != suggestion and suggestion.id not in followingIds %}
-						<a href="{{ path('app_usuario_follow', {id: suggestion.id}) }}" class="ajax-follow-link">
-							<button>Seguir</button>
-						</a>
-					{% endif %}
-				</li>
+						{% endif %}
+					</li>
 				{% endif %}
 			{% else %}
 				<p>No hay sugerencias.</p>

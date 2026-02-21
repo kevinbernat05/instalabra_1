@@ -14,6 +14,11 @@
 		<!-- Linking the correct CSS file -->
 		<link rel="stylesheet" href="{{ asset('css/estilos.css') }}"> {% block stylesheets %}{% endblock %}
 
+		<!-- Hotwire Turbo for SPA Navigation -->
+		<script type="module">
+			import hotwiredTurbo from 'https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/+esm';
+		</script>
+
 		<!-- Fuentes -->
 		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> {% block javascripts %}{% endblock %}
 		</head>
@@ -55,8 +60,7 @@
 
 					{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 						{# Botón para usuarios logueados: hace scroll y focus #}
-						<button class="publicar" 
-								onclick="document.querySelector('form[name=\'palabra\'] input[type=\'text\']').focus(); window.scrollTo({top:0, behavior:'smooth'});">
+						<button class="publicar" onclick="document.querySelector('form[name=\'palabra\'] input[type=\'text\']').focus(); window.scrollTo({top:0, behavior:'smooth'});">
 							Publicar
 						</button>
 					{% else %}
@@ -65,7 +69,7 @@
 							Publicar
 						</a>
 					{% endif %}
-					
+
 					<div
 						class="menu-bar">
 						<!-- Toggle menu functionality can be added here if needed -->

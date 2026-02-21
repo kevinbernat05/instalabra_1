@@ -126,7 +126,8 @@ final class PageController extends AbstractController
             $max = 0;
             // Calculamos el máximo real de esta lista para que las barras sean proporcionales
             foreach ($list as $item) {
-                if ($item['likesCount'] > $max) $max = $item['likesCount'];
+                if ($item['likesCount'] > $max)
+                    $max = $item['likesCount'];
             }
             $max = $max > 0 ? $max : 1;
 
@@ -483,6 +484,40 @@ final class PageController extends AbstractController
             ->setParameter('blocked', false)
             ->getQuery()
             ->getResult() : [];
+
+        // Check if the request expects JSON
+        if ($request->isXmlHttpRequest() || ($request->headers->get('Accept') !== null && strpos($request->headers->get('Accept'), 'application/json') !== false)) {
+            $jsonData = [];
+
+            if ($currentFilter === 'usuarios') {
+                foreach ($usuarios as $u) {
+                    $jsonData[] = [
+                        'id' => $u->getId(),
+                        'nombre' => $u->getNombre(),
+                    ];
+                }
+            } elseif ($currentFilter === 'palabras') {
+                foreach ($palabras as $p) {
+                    $jsonData[] = [
+                        'id' => $p->getId(),
+                        'palabra' => $p->getPalabra(),
+                    ];
+                }
+            } elseif ($currentFilter === 'definiciones') {
+                foreach ($palabras as $p) {
+                    $jsonData[] = [
+                        'id' => $p->getId(),
+                        'definicion' => $p->getDefinicion(),
+                        'palabra' => $p->getPalabra()
+                    ];
+                }
+            }
+
+            return $this->json([
+                'filter' => $currentFilter,
+                'results' => $jsonData
+            ]);
+        }
 
         return $this->render('page/results.html.twig', [
             'palabras' => $palabras,
